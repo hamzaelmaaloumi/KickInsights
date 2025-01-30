@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'api',
-    'users',
-    'players',
+    'myapp',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +82,7 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'users',
+        'NAME': 'PFE',
         'USER': 'postgres',
         'PASSWORD': '1234',
         'HOST': 'localhost',  # Replace with your PostgreSQL server's address if necessary
