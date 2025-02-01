@@ -6,6 +6,14 @@ def getAllteams() :
     return TeamModel.Team.objects.all()
 
 @staticmethod
+def get_team_by_name(team_name) :
+    return TeamModel.Team.objects.filter(name = team_name).first()
+
+@staticmethod
+def get_team_by_id(team_id) :
+    return TeamModel.Team.objects.filter(id = team_id).first()
+
+@staticmethod
 def add_team(team) :
     try :
         serializer = TeamSerializer(data=team)
@@ -23,9 +31,8 @@ def delete_team(team_name) :
         print("problem while deleting a team")
     
 @staticmethod
-def get_team_by_name(team_name) :
-    return TeamModel.Team.objects.filter(name = team_name).first()
-
-@staticmethod
-def get_team_by_id(team_id) :
-    return TeamModel.Team.objects.filter(id = team_id).first()
+def clearLeagues() :
+    try :
+        TeamModel.Team.objects.all().delete()
+    except Exception as e :
+        print("error while deleting Teams")

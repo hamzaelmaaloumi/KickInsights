@@ -1,5 +1,5 @@
 from myapp.entities import TeamStatsPartsModels
-from presentation.serializers import AttaqueSerializer, DefenseSerializer, DuelSerializer, GardienDeButSerializer, PassesSerializer, SommaireSerializer, TirsSerializer
+from myapp.presentation.serializers import AttaqueSerializer, DefenseSerializer, DuelSerializer, GardienDeButSerializer, PassesSerializer, SommaireSerializer, TirsSerializer
 
 @staticmethod
 def  get_attaque_by_id(attaqueID) :
