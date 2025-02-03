@@ -62,9 +62,10 @@ def scraping_players() :
             post = part.find_element(By.XPATH, './/div[@class="Box Flex jilvhL jLRkRA"]')
             names = part.find_elements(By.XPATH, './/div[@class="Text ietnEf"]')
             ages = part.find_elements(By.XPATH, './/span[@class="Text eMhAJJ"]')
-            images = part.find_elements(By.XPATH, './/img[@class="Img cNprQ"]')
+            images = part.find_elements(By.XPATH, './/img[@class="Img dlClrt"]')
             
             size = len(names)
+            print(size)
             
             for i in range(size) :
                 image = images[i].get_attribute("src")
@@ -77,6 +78,7 @@ def scraping_players() :
                     })
         except :
             continue
+            
         
     driver.quit()
     

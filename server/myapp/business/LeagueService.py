@@ -63,7 +63,7 @@ def scraping_leagues() :
             formatted_date = datetime.strptime(date, dateFormat)
             if formatted_date >= constDate :
                 league_name = part.find_element(By.XPATH, './/bdi[@class="Text cUmrHt"]')
-                image = part.find_element(By.XPATH, './/img[@class="Img bIarbf"]')
+                image = part.find_element(By.XPATH, './/img[contains(@class, "Img")]')
                 print(league_name.text)
                 print(image.get_attribute("src"))
                 if ({"league_name" : league_name.text , "image" : image.get_attribute("src")}) not in leagues :
@@ -77,8 +77,8 @@ def scraping_leagues() :
         try:
             if LeagueDao.get_league_by_name(league["league_name"]) is None :
                 LeagueDao.addLeague(league)
-        except :
-            print("problem while inserting league")
+        except Exception as e:
+            print(f"problem while inserting league : {e}")
     
     return leagues
 

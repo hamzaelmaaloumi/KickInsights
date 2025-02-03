@@ -7,7 +7,7 @@ def getAllLeagues() :
 
 @staticmethod
 def get_league_by_name(name) :
-    return LeagueModel.League.objects.filter(League_name=name).first()
+    return LeagueModel.League.objects.filter(league_name=name).first()
 
 @staticmethod
 def get_league_by_id(LeagueId) :

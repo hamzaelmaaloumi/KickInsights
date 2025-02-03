@@ -28,4 +28,5 @@ def get_team_by_name(team_name) :
 
 @staticmethod
 def get_team_by_id(team_id) :
+    print(team_id)
     return TeamModel.Team.objects.filter(id = team_id).first()
