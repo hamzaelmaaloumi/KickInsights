@@ -1,17 +1,35 @@
-import Book from "./components/Home/Book"
+import Footer from "./components/Footer";
+import NavBar from "./components/Navbar/UserNavBar";
+import { Routes, Route } from "react-router-dom";
+import GuestHome from "./pages/Home/GuestHome";
+import Login from "./pages/Login-Sign/Login";
+import UserSignUp from "./pages/Login-Sign/UserSignUp";
+import ManagerSignUp from "./pages/Login-Sign/ManagerSignUp";
+import UserProvider from "./context/UserContext";
+import NotFound from "./components/NotFound";
+
 
 function App() {
 
   return (
-    <div className="bg-black h-[1900px]"> 
-      <Book/>
+    <div className="bg-black">
+      <UserProvider>
+      <NavBar />
+        <Routes>
+          <Route path="/" element={<GuestHome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/user-sign-up" element={<UserSignUp />} />
+          <Route path="/manager-sign-up" element={<ManagerSignUp />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      <Footer />
+      </UserProvider>
+      
     </div>
     )
 }
 
-/* 
-Junior vs Senior React Folder Structure - How To Organize React Projects */
-/* Responsive Navbar in React using React Router | Beginner Tutorial */
+
   
 
 export default App;

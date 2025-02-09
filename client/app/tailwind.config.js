@@ -6,6 +6,15 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+      'bounce-up-down': 'bounceUpDown 3s infinite ease-in-out',
+      },
+      keyframes: {
+        bounceUpDown: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
+      },
       fontFamily: {
         manrope: ['Manrope', 'sans-serif'],
         robotoMono: ['Roboto Mono', 'monospace'],
