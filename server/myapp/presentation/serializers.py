@@ -4,6 +4,7 @@ from myapp.entities.TeamModel import Team
 from myapp.entities.LeagueModel import League
 from myapp.entities.MatcheModel import Matche
 from myapp.entities.TeamStatsModel import TeamStats
+from myapp.entities.PlayerStatsModel import PlayerStats
 from myapp.entities.TeamStatsPartsModels import Sommaire, Tirs, Attaque, Passes, Duel, Defense, GardienDeBut
 
 class PlayerSerializer (serializers.ModelSerializer) :
@@ -65,4 +66,9 @@ class GardienDeButSerializer(serializers.ModelSerializer) :
 class TeamStatsSerializer(serializers.ModelSerializer) :
     class Meta :
         model = TeamStats
+        fields = '__all__'
+
+class PlayerStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayerStats
         fields = '__all__'

@@ -22,5 +22,5 @@ from myproject import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('api.urls')),
-    path('api/app/',include('myapp.urls')),
+    path('myapp/',include('myapp.urls')),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
