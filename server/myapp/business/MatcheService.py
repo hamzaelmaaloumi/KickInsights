@@ -9,6 +9,7 @@ import time
 from myapp.presentation import serializers
 from datetime import datetime
 from myapp.entities import LeagueModel, MatcheModel, TeamModel
+from myapp.business import TeamStatsService
 
 @staticmethod
 def get_matche_by_id(matcheID) :
@@ -57,10 +58,16 @@ def scrapMatches() :
         )
         
         dateFormat = "%d/%m/%y"
-        
-        constDate = datetime.strptime('01/01/24',dateFormat)
-        
         matches = []
+        date = "01/01/24"
+        try :
+            latest_date = MatcheDao.get_latest_matche_date()
+            if latest_date :
+                date = latest_date.strftime(dateFormat)
+        except : 
+            pass
+        
+        constDate = datetime.strptime(date,dateFormat)
         
         print(f"Total parts found: {len(parts)}")
         
@@ -68,10 +75,10 @@ def scrapMatches() :
             try :
                 date = part.find_element(By.XPATH, './/bdi[@class="Text kcRyBI"]').text
                 formatted_date = datetime.strptime(date, dateFormat)
-                if formatted_date >= constDate :
+                if formatted_date > constDate :
                     leagueName = part.find_element(By.XPATH, './/bdi[@class="Text cUmrHt"]').text
                     partMatches = WebDriverWait(part, 10).until(
-                        EC.presence_of_all_elements_located((By.XPATH, './/div[contains(@class, "Box Flex cBIkhT cQgcrM sc-929a8fc9-0 dvkfVt js-list-cell-target")]'))
+                        EC.presence_of_all_elements_located((By.XPATH, './/a[contains(@class, "sc-3f813a14-0 eRKEkG")]'))
                     )
                     print(f"Number of matches in this part: {len(partMatches)}")
                     for match in partMatches :
@@ -101,12 +108,20 @@ def scrapMatches() :
                             state = match.find_element(By.XPATH, './/div[@class="Text ihwaOf"]').text
                             
                             leagueObj = LeagueModel.League.objects.filter(league_name=leagueName).first()
+                            if leagueObj :
+                                print("League found")
+                                
                             teamAobj = TeamModel.Team.objects.filter(name=teamA).first()
+                            if teamAobj :
+                                print("TeamA found")
+                                
                             teamBobj = TeamModel.Team.objects.filter(name=teamB).first()
+                            if teamBobj :
+                                print("TeamB found")
                             
                             print(teamA)
                             print(teamB)
-                            matches.append({
+                            matche = {
                             "league" : leagueObj.pk,
                             "date"  : matcheDate,
                             "teamA" : teamAobj.pk,
@@ -114,21 +129,22 @@ def scrapMatches() :
                             "scoreA" : scoreA,
                             "scoreB" : scoreB,
                             "state" : state
-                            })
+                            }
+                            matches.append(matche)
+                            MatcheDao.addMatche(matche)
+                            TeamStatsService.scraping_team_stats(match.get_attribute("href"))
                         except Exception as e :
-                            print(f"❌ Error processing match: {e}")
+                            print(f"Error processing match: {e}")
                             continue
                         
                                             
-            except :
+            except Exception as e :
+                print(f"Error processing part: {e}")
                 continue
+            
+    except Exception as e :
+        print(f"Error: {e}")
+        
     finally :
         driver.quit()
-        
-        for matche in matches :
-            try :
-                MatcheDao.addMatche(matche)
-            except :
-                print("Error adding matche")
-        
         return matches

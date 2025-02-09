@@ -27,8 +27,7 @@ def delete_team_stats(matchID) :
     TeamStatsDao.delete_team_stats(matchID)
     
 @staticmethod
-def scraping_team_stats() :
-    website = "https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches"
+def scraping_team_stats(link) :
     path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
 
@@ -44,7 +43,7 @@ def scraping_team_stats() :
     sommaire_mapping = {
         "Possession" : "possession",
         "Grandes chances" : "grandes_chances",
-        "Total tirs" : "total_tirs",
+        "Total des tirs" : "total_tirs",
         "Arrêts du gardien" : "arrets_gardien",
         "Corner" : "corner",
         "Fautes" : "fautes",
@@ -90,7 +89,7 @@ def scraping_team_stats() :
         "Dribbles" : "dribbles"  ,
     }
     
-    defesne_mapping = {
+    defense_mapping = {
         "Tacles gagnés" : "tacles_gagnes" ,
         "Tacles totaux" : "tacles_totaux" ,
         "Interceptions" : "interceptions" ,
@@ -105,222 +104,208 @@ def scraping_team_stats() :
         "Coup de pied de but" : "coup_de_pied_de_but"
     }
 
-    try :
-        driver.get(website)
+    wait = WebDriverWait(driver, 10)
+    teamStats, sommaire, attaque, passes, duel, defense, tirs, gardien = None, {}, {}, {}, {}, {}, {}, {}
     
-        allMatches = driver.find_element(By.XPATH, '//button[@class="Chip hBXmOq"]')
-        allMatches.click()
-        print("all matches is clicked")
+    try :
+        driver.get(link)
+        time.sleep(2)
+
+        print(link + " is opened")
+        time.sleep(2)
+        dateAndTime = wait.until(
+            EC.presence_of_element_located((By.XPATH, './/span[@class="Text hZKSbA"]'))
+        ).text
+        date = dateAndTime[:-5]
+        matcheDate = datetime.strptime(date, "%d/%m/%Y").date()
+        if matcheDate:
+            match = MatcheDao.get_matche_by_date(matcheDate)
+            if match.teamB:
+                    print(f"Match found for {matcheDate}: Team B is {match.teamB.name}")
+                    team_b = TeamDao.get_team_by_id(match.teamB.pk)
+                    if team_b:
+                        if team_b.name == "Maroc":
+                            side, per_side, def_side = "Box fIiFyn", "Text ietnEf", 1
+                        else:
+                            side, per_side, def_side = "Box hKQtHc", "Text cRLeMh", 0
+                        
+                        print(f"Side set to {side} for team {team_b.name}")
+                    else:
+                        print(f"No team found for ID: {match.teamB.pk}")
+                        side = None
+            else:
+                print("match.teamB is None, skipping team lookup")
+                side = None
         
-        parts = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.XPATH, '//div[@class="Box iuXXsV"]'))
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, './/a[@href="#tab:statistics"]'))
+        )
+        button = driver.find_element(By.XPATH, './/a[@href="#tab:statistics"]')
+        driver.execute_script("arguments[0].click();", button)
+        print("stats button is clicked")
+        time.sleep(2)
+        
+        layer = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//div[@class="Box Flex VhXzF kGBmhP"]'))
         )
         
-        dateFormat = "%d/%m/%y"
-        
-        constDate = datetime.strptime('01/01/24',dateFormat)
-        
-        
-        teamStats = []
-        links = []
-        sommaire = {}
-        attaque = {}
-        passes = {}
-        duel = {}
-        defense = {}
-        tirs = {}
-        gardien = {}
-        
-        
-        for part in parts :
+        boxs = layer.find_elements(By.XPATH, './div')
+    
+        for box in boxs :
             try :
-                date = part.find_element(By.XPATH, './/bdi[@class="Text kcRyBI"]').text
-                formatted_date = datetime.strptime(date, dateFormat)
-                if formatted_date >= constDate :
-                    a_elements = part.find_elements(By.XPATH, './/a[contains(@class, "eRKEkG")]')
-                    for a_element in a_elements :
-                        links.append(a_element.get_attribute("href"))
-                                            
-            except :
-                continue
-        
-        for link in links:
-            sommaire, attaque, passes, duel, defense, tirs, gardien = {}, {}, {}, {}, {}, {}, {}
-            try :
-                driver.get(link)
-                print(link + " is opened")
-                dateAndTime = driver.find_element(By.XPATH, '//span[@class="Text hZKSbA"]').text
-                date = dateAndTime[:-5]
-                matcheDate = datetime.strptime(date ,"%d/%m/%Y").date()
-                match = MatcheDao.get_matche_by_date(matcheDate)
-                if match is None:
-                    print(f"No match found for date: {matcheDate}")
-                else:
-                    side = "Box hKQtHc"
-                    if TeamDao.get_team_by_id(match.teamB_id).name == "Maroc":
-                        side = "Box fIiFyn"
+                title = box.find_element(By.XPATH, './div[1]')
+                if title.text == "Aperçu du match" :
+                    print("Sommaire box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
+                        
+                        if key == "Possession" :
+                            value = value
+                        
+                        if key in sommaire_mapping :
+                            sommaire[sommaire_mapping[key]] = value
                     
-                WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, './/a[@href="#tab:statistics"]'))
-                )
-                button = driver.find_element(By.XPATH, './/a[@href="#tab:statistics"]')
-                driver.execute_script("arguments[0].click();", button)
-                print("stats button is clicked")
-                time.sleep(2)
+                if title.text == "Tirs" :
+                    print("Tirs box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
+                    
+                        if key in tirs_mapping :
+                            tirs[tirs_mapping[key]] = value
+                            
+                if title.text == "Attaque" :
+                    print("Attaque box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
+                    
+                        if key in attaque_mapping :
+                            attaque[attaque_mapping[key]] = value
                 
-                boxs = WebDriverWait(driver, 10).until(
-                    EC.presence_of_all_elements_located((By.XPATH, './/div[@class="Box jfMEge"]'))
-                )
-            
-                for box in boxs :
-                    try :
-                        title = box.find_element(By.XPATH, './/span[@class="Text eKGuRn"]')
-                        if title.text == "Aperçu du match" :
-                            print("Sommaire box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                                
-                                if key == "Possession" :
-                                    value = value[:-1]
-                                
-                                if key in sommaire_mapping :
-                                    sommaire[sommaire_mapping[key]] = value
-                            teamStats.append({"sommaire" : sommaire})
+                if title.text == "Passes" :
+                    print("Passes box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex lirwTl bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
+                    
+                        if key in passes_mapping :
+                            passes[passes_mapping[key]] = value
                             
-                        if title.text == "Tirs" :
-                            print("Tirs box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                            
-                                if key in tirs_mapping :
-                                    tirs[tirs_mapping[key]] = value
-                            teamStats.append({"tirs" : tirs})
-                                    
-                        if title.text == "Attaque" :
-                            print("Attaque box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                            
-                                if key in attaque_mapping :
-                                    attaque[attaque_mapping[key]] = value
-                            teamStats.append({"attaque" : attaque})
+                    for per_part in per_parts :
+                        key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
                         
-                        if title.text == "Passes" :
-                            print("Passes box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex lirwTl bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                            
-                                if key in passes_mapping :
-                                    passes[passes_mapping[key]] = value
-                                    
-                            for per_part in per_parts :
-                                key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
-                                value = per_part.find_element(By.XPATH, './/div[@class="Text ietnEf"]').text
-                                
-                                if key in passes_mapping :
-                                    passes[passes_mapping[key]] = value   
-                            teamStats.append({"passes" : passes})  
-                            
-                        if title.text == "Duels" :
-                            print("Duels box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex lirwTl bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text
-                                 
-                            
-                                if key == "Duels" :
-                                    value = value[:-1]
-                                
-                                if key in duel_mapping :
-                                    duel[duel_mapping[key]] = value
-                                    
-                            for per_part in per_parts :
-                                key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
-                                value = per_part.find_element(By.XPATH, './/div[@class="Text ietnEf"]').text
-                                
-                                if key in duel_mapping :
-                                    duel[duel_mapping[key]] = value
-                            teamStats.append({"duel" : duel})
-                            
-                        if title.text == "Défense" :
-                            print("Defense box is found")
-                            per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex lirwTl bnpRyo"]')
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            
-                            for per_part in per_parts :
-                                key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
-                                value = per_part.find_element(By.XPATH, './/div[@class="Text hLrEqo"]').text
-                                
-                                if key in defesne_mapping :
-                                    defense[defesne_mapping[key]] = value[:-1]
-                            
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                            
-                                if key in defesne_mapping :
-                                    defense[defesne_mapping[key]] = value  
-                            teamStats.append({"defense" : defense}) 
-                            
-                        if title.text == "Gardien de but" :
-                            print("Gardien box is found")
-                            parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
-                            for part in parts :
-                                key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
-                                value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
-                            
-                                if key in gardien_de_but_mapping :
-                                    gardien[gardien_de_but_mapping[key]] = value
-                            teamStats.append({"gardien" : gardien})
-                                    
-                    except Exception as e :
-                        print(f"problem in finding the boxs : {e}")
+                        if per_side == "Text ietnEf" :
+                            values = per_part.find_elements(By.XPATH, f'.//span[@class="{per_side}"]')
+                            if key in passes_mapping :
+                                passes[passes_mapping[key]] = values[2].text  
+                            continue
                         
-                # matcheID = MatcheDao.get_matche_by_date(matcheDate).id
-                # print(matcheID)
-                # sommaireID = TeamStatsPartsDao.add_sommaire(sommaire)
-                # print(sommaireID)
-                # tirsID = TeamStatsPartsDao.add_tirs(tirs)
-                # print(tirsID)
-                # attaqueID = TeamStatsPartsDao.add_attaque(attaque)
-                # print(attaqueID)
-                # passesID = TeamStatsPartsDao.add_passes(passes)
-                # print(passesID)
-                # duelID = TeamStatsPartsDao.add_duels(duel)
-                # print(duelID)
-                # defenseID = TeamStatsPartsDao.add_defense(defense)
-                # print(defenseID)
-                # gardienID = TeamStatsPartsDao.add_gardien_de_but(gardien)
-                # print(gardienID)
+                        value = per_part.find_element(By.XPATH, f'.//span[@class="{per_side}"]').text
+                        
+                        if key in passes_mapping :
+                            passes[passes_mapping[key]] = value     
+                    
+                if title.text == "Duels" :
+                    print("Duels box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex lirwTl bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text
+                        
+                        if key in duel_mapping :
+                            duel[duel_mapping[key]] = value
+                            
+                    for per_part in per_parts :
+                        key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
+                        
+                        if per_side == "Text ietnEf" :
+                            values = per_part.find_elements(By.XPATH, f'.//span[@class="{per_side}"]')
+                            if key in duel_mapping :
+                                duel[duel_mapping[key]] = values[-1].text  
+                            continue
+                        
+                        value = per_part.find_element(By.XPATH, f'.//span[@class="{per_side}"]').text
+                        if key in duel_mapping :
+                            duel[duel_mapping[key]] = value
                 
-                # teamStats.append({
-                #     "matcheID" : matcheID,
-                #     "sommaire" : sommaireID,
-                #     "tirs" : tirsID,
-                #     "attaque" : attaqueID,
-                #     "passes" : passesID,
-                #     "duels" : duelID,
-                #     "defense" : defenseID,
-                #     "GardienDeBut" : gardienID
-                # })
-
+                    
+                if title.text == "Défense" :
+                    print("Defense box is found")
+                    per_parts = box.find_elements(By.XPATH, './/div[@class="Box Flex dXtfMP bnpRyo"]')
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    
+                    for per_part in per_parts :
+                        key = per_part.find_element(By.XPATH, './/span[@class="Text lluFbU"]').text
+                        values = per_part.find_elements(By.XPATH, './/span[@class="Text hLrEqo"]')
+                        if values :
+                            final_value = values[def_side].text
+                        else :
+                            final_value = None
+                        
+                        if key in defense_mapping :
+                            defense[defense_mapping[key]] = final_value
+                    
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value_elements = part.find_elements(By.XPATH, f'.//bdi[@class="{side}"]')
+                        if value_elements :
+                            value = value_elements[0].text
+                        else :
+                            value = None
+                            
+                        if key in defense_mapping :
+                            defense[defense_mapping[key]] = value   
+                    
+                if title.text == "Gardien de but" :
+                    print("Gardien box is found")
+                    parts = box.find_elements(By.XPATH, './/div[@class="Box Flex heNsMA bnpRyo"]')
+                    for part in parts :
+                        key = part.find_element(By.XPATH, './/bdi[@class="Box fUNIGw"]').text
+                        value = part.find_element(By.XPATH, f'.//bdi[@class="{side}"]').text 
+                    
+                        if key in gardien_de_but_mapping :
+                            gardien[gardien_de_but_mapping[key]] = value
+                            
             except Exception as e :
-                print(f"problem while extracting data from website : {e}")
+                print(f"problem in finding the boxs : {e}")
+                
+        matcheID = MatcheDao.get_matche_by_date(matcheDate).id
+        print(f"this is the match id : {matcheID}")
+        sommaireID = TeamStatsPartsDao.add_sommaire(sommaire)
+        tirsID = TeamStatsPartsDao.add_tirs(tirs)
+        attaqueID = TeamStatsPartsDao.add_attaque(attaque)
+        passesID = TeamStatsPartsDao.add_passes(passes)
+        duelID = TeamStatsPartsDao.add_duels(duel)
+        defenseID = TeamStatsPartsDao.add_defense(defense)
+        gardienID = TeamStatsPartsDao.add_gardien_de_but(gardien)
+        
+        
+        teamStats = {
+            "matcheID" : matcheID,
+            "sommaire" : sommaireID,
+            "tirs" : tirsID,
+            "attaque" : attaqueID,
+            "passes" : passesID,
+            "duels" : duelID,
+            "defense" : defenseID,
+            "GardienDeBut" : gardienID
+        }
+        TeamStatsDao.add_team_stats(teamStats)
             
+    except Exception as e :
+            print(f"problem while extracting data from website : {e}")
         
     finally :
         driver.quit()
-        
         return teamStats
 
+# strptime() – Convert String to Datetime
+# strftime() – Convert Datetime to String

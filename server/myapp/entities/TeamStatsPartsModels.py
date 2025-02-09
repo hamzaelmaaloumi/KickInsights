@@ -1,7 +1,7 @@
 from django.db import models
 
 class Sommaire(models.Model):
-    possession = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    possession = models.CharField(blank=True, null=True)
     grandes_chances = models.PositiveIntegerField(blank=True, null=True)
     total_tirs = models.PositiveIntegerField(blank=True, null=True)
     arrets_gardien = models.PositiveIntegerField(blank=True, null=True)
@@ -37,14 +37,14 @@ class Passes(models.Model):
     transversales = models.CharField(blank=True, null=True)
     
 class Duel(models.Model):
-    duels = models.IntegerField(blank=True, null=True) 
+    duels = models.CharField(blank=True, null=True) 
     pertes_balle = models.IntegerField(blank=True, null=True) 
     duels_sol = models.CharField(blank=True, null=True) 
     duels_aeriens = models.CharField(blank=True, null=True)  
     dribbles = models.CharField(blank=True, null=True)
 
 class Defense(models.Model) :
-    tacles_gagnes = models.IntegerField(blank=True, null=True)
+    tacles_gagnes = models.CharField(blank=True, null=True)
     tacles_totaux = models.IntegerField(blank=True, null=True)
     interceptions = models.IntegerField(blank=True, null=True)
     recuperations = models.IntegerField(blank=True, null=True)

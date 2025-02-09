@@ -100,6 +100,7 @@ def scraping_teams() :
         for team_href in teams_href :
             try :
                 driver.get(team_href)
+                time.sleep(2)
                 WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located((By.XPATH, './/h2[@class="Text jrLdUU"]'))
                 )
@@ -133,7 +134,8 @@ def scraping_teams() :
         
         for team in teams :
             try :
-                TeamDao.add_team(team)
+                if TeamDao.get_team_by_name(team['name']) is None :
+                    TeamDao.add_team(team)
             except :
                 print("problem while inserting the team")
 

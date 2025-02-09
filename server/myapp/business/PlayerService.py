@@ -63,18 +63,19 @@ def scraping_players() :
             names = part.find_elements(By.XPATH, './/div[@class="Text ietnEf"]')
             ages = part.find_elements(By.XPATH, './/span[@class="Text eMhAJJ"]')
             images = part.find_elements(By.XPATH, './/img[@class="Img dlClrt"]')
+            links = part.find_elements(By.TAG_NAME, 'a')
             
             size = len(names)
             print(size)
             
             for i in range(size) :
-                image = images[i].get_attribute("src")
                 players.append({
                     "player_name" : names[i].text,
                     "position" : post.text,
                     "age" : ages[i].text.split()[0],
                     "nationality" : "Morocco",
-                    "image" : image
+                    "image" : images[i].get_attribute("src"),
+                    "link" : links[i].get_attribute("href")
                     })
         except :
             continue

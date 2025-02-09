@@ -7,5 +7,5 @@ urlpatterns = [
     path('scrapTeams/',TeamController.scraping_teams),
     path('scrapLeagues/',LeagueController.scraping_leagues),
     path('scrapMatches/',MatcheController.scraping_matches),
-    path('scrapTeamStats/',TeamStatsController.scraping_team_Stats),
+    # path('scrapTeamStats/',TeamStatsController.scraping_team_Stats),
 ]

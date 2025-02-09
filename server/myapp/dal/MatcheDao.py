@@ -38,3 +38,7 @@ def clearMatches() :
         MatcheModel.Matche.objects.all().delete()
     except Exception as e :
         print("problem while deleting the Matches")
+        
+@staticmethod
+def get_latest_matche_date() :
+    return MatcheModel.Matche.objects.latest('date').date
