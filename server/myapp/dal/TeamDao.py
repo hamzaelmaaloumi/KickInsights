@@ -18,9 +18,10 @@ def add_team(team) :
     try :
         serializer = TeamSerializer(data=team)
         if serializer.is_valid() :
-            serializer.save()
-    except :
-        print("problem while inserting a team")
+            obj = serializer.save()
+            return obj.id
+    except Exception as e:
+        print(f"problem while inserting a team : {e}")
         
 @staticmethod
 def delete_team(team_name) :

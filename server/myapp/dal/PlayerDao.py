@@ -18,7 +18,8 @@ def addPlayer(player) :
     try :
         serializer = PlayerSerializer(data=player)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except Exception as e :
         print("error while inserting player")
         
@@ -36,3 +37,7 @@ def clearPlayers() :
         PlayerModel.Player.objects.all().delete()
     except Exception as e :
         print("problem while deleting the players")
+        
+@staticmethod
+def get_players_links() :
+    return PlayerModel.Player.objects.values_list('link', flat=True)

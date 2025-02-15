@@ -5,7 +5,9 @@ from .serializers import LeagueSerializer
 
 @api_view(['GET'])
 def scraping_leagues(request) :
-    leagues = LeagueService.scraping_leagues()
+    leagues1 = LeagueService.scraping_leagues()
+    leagues2 = LeagueService.scrap_players_leagues()
+    leagues = leagues1 + leagues2
     return Response(leagues)
 
 @api_view(['GET'])
@@ -16,9 +18,13 @@ def getAllLeagues(request) :
 
 @api_view(['POST'])
 def addLeague(request) :
-    serializer = LeagueSerializer(data=request.data)
-    if not serializer.is_valid() :
-        return Response(serializer.errors, status=400)
-    serializer.save()
-    return Response(serializer.data)
-
+    try : 
+        league = LeagueService.addLeague(request.data)
+        return Response(league)
+    except :
+        print("problem while adding league from api")
+        
+@api_view(['GET'])
+def scraping_players_leagues(request) :
+    leagues = LeagueService.scrap_players_leagues()
+    return Response(leagues)

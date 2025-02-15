@@ -1,4 +1,4 @@
-from myapp.dal import TeamDao
+from myapp.dal import TeamDao, PlayerDao, PlaysDao
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -8,6 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from myapp.presentation.serializers import TeamSerializer
 from datetime import datetime
+
 
 @staticmethod
 def get_team_by_id(teamID) :
@@ -144,3 +145,42 @@ def scraping_teams() :
         driver.quit()
     
     return teams
+
+@staticmethod
+def scraping_players_teams() :
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    service = Service(path)
+    
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--disable-web-security')
+    
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.set_window_size(800,600)
+    
+    links = PlayerDao.get_players_links()
+    teams = []
+    
+    for link in links :
+        driver.get(link)
+        time.sleep(2)
+        
+        playerName = driver.find_element(By.XPATH, '//h2[@class="Text cuNqBu"]')
+        print(playerName.text)
+        teamName = driver.find_element(By.XPATH, '//div[@class="Text leMLNz"]')
+        teamImage = driver.find_element(By.XPATH, '//img[@class="Img hDoOBr"]')
+        team = {
+            "image": teamImage.get_attribute("src"),
+            "name": teamName.text,
+        }
+        teams.append(team)
+        teamID = TeamDao.add_team(team)
+        playerID = PlayerDao.get_player_by_name(playerName.text).pk
+        PlaysDao.addPlaysRow({"teamID": teamID, "playerID": playerID})
+        
+    return teams
+        
+    
+    

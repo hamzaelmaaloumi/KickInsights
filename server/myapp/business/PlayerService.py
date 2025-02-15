@@ -1,4 +1,4 @@
-from myapp.dal import PlayerDao
+from myapp.dal import PlayerDao, TeamDao, PlaysDao
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -27,6 +27,27 @@ def addPlayer(player) :
 @staticmethod
 def deletePlayer(name) :
     return PlayerDao.deletePlayer(name)
+
+@staticmethod
+def get_all_players_with_team() :
+    rows = PlaysDao.getAllRows()
+    players = []
+    for row in rows :
+        if row.teamID_id != 1 :
+            player = PlayerDao.get_player_by_id(row.playerID_id)
+            print(player.player_name)
+            print(row.teamID_id)
+            team = TeamDao.get_team_by_id(row.teamID_id)
+            players.append({
+                "image" : player.image,
+                "name" : player.player_name,
+                "age" : player.age,
+                "position" : player.position,
+                "team" : team.image
+            })
+    return players
+        
+    
 
 @staticmethod
 def scraping_players() :
@@ -87,7 +108,9 @@ def scraping_players() :
     
     for player in players :
         try:
-            PlayerDao.addPlayer(player)
+            playerID = PlayerDao.addPlayer(player)
+            teamID = TeamDao.get_team_by_name("Maroc").pk
+            PlaysDao.addPlaysRow({"teamID": teamID, "playerID": playerID})
         except :
             print("problem while inserting player")
     
