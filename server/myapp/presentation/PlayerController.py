@@ -14,11 +14,15 @@ def getAllplayers(request) :
     serializer = PlayerSerializer(players, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def get_all_players_with_team(request) :
+    return Response(PlayerService.get_all_players_with_team())
+
 @api_view(['POST'])
 def addPlayer(request) :
-    serializer = PlayerSerializer(data=request.data)
-    if not serializer.is_valid() :
-        return Response(serializer.errors, status=400)
-    serializer.save()
-    return Response(serializer.data)
+    try :
+        player = PlayerService.addPlayer(request.data)
+        return Response(player)
+    except :
+        print("problem while adding player from api")
 

@@ -34,16 +34,20 @@ def add_attaque(attaque) :
     try :
         serializer = AttaqueSerializer(data=attaque)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except Exception as e :
         print("error while inserting attaque")
         
 @staticmethod
 def add_sommaire(sommaire) :
     try :
+        print(sommaire)
         serializer = SommaireSerializer(data=sommaire)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            print(obj)
+            return obj.id
     except : 
         print("error while inserting sommaire")
         
@@ -52,7 +56,8 @@ def add_tirs(tirs) :
     try :
         serializer = TirsSerializer(data=tirs)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except :
         print("error while inserting a tir stats")
 
@@ -61,7 +66,8 @@ def add_passes(passes) :
     try :
         serializer = PassesSerializer(data=passes)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except :
         print("error while inserting a passes stats")
         
@@ -70,7 +76,8 @@ def add_duels(duels) :
     try :
         serializer = DuelSerializer(data=duels)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except :
         print("error while inserting a duels stats")
         
@@ -79,7 +86,8 @@ def add_defense(defense) :
     try :
         serializer = DefenseSerializer(data=defense)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except :
         print("error while inserting a defense stats")
         
@@ -88,6 +96,7 @@ def add_gardien_de_but(gardien_de_but) :
     try :
         serializer = GardienDeButSerializer(data=gardien_de_but)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except :
         print("error while inserting a tir stats")        

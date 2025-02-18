@@ -12,6 +12,7 @@ def get_matche_by_id(MatcheId) :
 
 @staticmethod
 def get_matche_by_date(matcheDate) :
+    print("matcheDate:", matcheDate)
     return MatcheModel.Matche.objects.filter(date = matcheDate).first()
 
 @staticmethod
@@ -37,3 +38,7 @@ def clearMatches() :
         MatcheModel.Matche.objects.all().delete()
     except Exception as e :
         print("problem while deleting the Matches")
+        
+@staticmethod
+def get_latest_matche_date() :
+    return MatcheModel.Matche.objects.latest('date').date
