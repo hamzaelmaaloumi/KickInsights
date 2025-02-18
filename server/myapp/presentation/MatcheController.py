@@ -16,9 +16,10 @@ def getAllLeagues(request) :
 
 @api_view(['POST'])
 def addMatch(request) :
-    serializer = MatcheSerializer(data=request.data)
-    if not serializer.is_valid() :
-        return Response(serializer.errors, status=400)
-    serializer.save()
-    return Response(serializer.data)
+    try :
+        match = MatcheService.addMatche(request.data)
+        return Response(match)
+    except : 
+        print("problem while adding match from api")
+    
 

@@ -9,6 +9,11 @@ def scraping_teams(request) :
     return Response(teams)
 
 @api_view(['GET'])
+def scraping_players_teams(request) :
+    teams = TeamService.scraping_players_teams()
+    return Response(teams)
+
+@api_view(['GET'])
 def getAllteams(request) :
     teams = TeamService.getAllTeams()
     serializer = TeamSerializer(teams, many=True)

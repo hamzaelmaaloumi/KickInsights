@@ -1,4 +1,4 @@
-from myapp.dal import PlayerDao
+from myapp.dal import PlayerDao, TeamDao, PlaysDao
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -27,6 +27,27 @@ def addPlayer(player) :
 @staticmethod
 def deletePlayer(name) :
     return PlayerDao.deletePlayer(name)
+
+@staticmethod
+def get_all_players_with_team() :
+    rows = PlaysDao.getAllRows()
+    players = []
+    for row in rows :
+        if row.teamID_id != 1 :
+            player = PlayerDao.get_player_by_id(row.playerID_id)
+            print(player.player_name)
+            print(row.teamID_id)
+            team = TeamDao.get_team_by_id(row.teamID_id)
+            players.append({
+                "image" : player.image,
+                "name" : player.player_name,
+                "age" : player.age,
+                "position" : player.position,
+                "team" : team.image
+            })
+    return players
+        
+    
 
 @staticmethod
 def scraping_players() :
@@ -62,21 +83,24 @@ def scraping_players() :
             post = part.find_element(By.XPATH, './/div[@class="Box Flex jilvhL jLRkRA"]')
             names = part.find_elements(By.XPATH, './/div[@class="Text ietnEf"]')
             ages = part.find_elements(By.XPATH, './/span[@class="Text eMhAJJ"]')
-            images = part.find_elements(By.XPATH, './/img[@class="Img cNprQ"]')
+            images = part.find_elements(By.XPATH, './/img[@class="Img dlClrt"]')
+            links = part.find_elements(By.TAG_NAME, 'a')
             
             size = len(names)
+            print(size)
             
             for i in range(size) :
-                image = images[i].get_attribute("src")
                 players.append({
                     "player_name" : names[i].text,
                     "position" : post.text,
                     "age" : ages[i].text.split()[0],
                     "nationality" : "Morocco",
-                    "image" : image
+                    "image" : images[i].get_attribute("src"),
+                    "link" : links[i].get_attribute("href")
                     })
         except :
             continue
+            
         
     driver.quit()
     
@@ -84,7 +108,9 @@ def scraping_players() :
     
     for player in players :
         try:
-            PlayerDao.addPlayer(player)
+            playerID = PlayerDao.addPlayer(player)
+            teamID = TeamDao.get_team_by_name("Maroc").pk
+            PlaysDao.addPlaysRow({"teamID": teamID, "playerID": playerID})
         except :
             print("problem while inserting player")
     

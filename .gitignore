@@ -1,1 +1,4 @@
 -e "__pycache__/\n*.pyc" 
+**/*.pyc
+"*.pyc" 
+"__pycache__/" 
