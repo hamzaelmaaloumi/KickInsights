@@ -1,3 +1,5 @@
+import sys
+import os
 from myapp.dal import PlayerDao, TeamDao, PlaysDao
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -52,7 +54,7 @@ def get_all_players_with_team() :
 @staticmethod
 def scraping_players() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
 
     options = Options()

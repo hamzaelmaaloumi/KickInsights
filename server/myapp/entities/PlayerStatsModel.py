@@ -25,7 +25,7 @@ class PlayerStats(models.Model):
     interceptions = models.IntegerField()
     total_tackles = models.IntegerField()
     dribbled_past = models.IntegerField()
-    rating = models.IntegerField()
+    rating = models.FloatField()
 
     def __str__(self):
         return f"Player: {self.player} - Match: {self.match}"
@@ -44,7 +44,7 @@ class GoalkeeperStats(models.Model):
     blocked_shots = models.IntegerField()
     shots_on_target = models.IntegerField()
     shots_off_target = models.IntegerField()
-    rating = models.IntegerField()
+    rating = models.FloatField()
 
     def __str__(self):
         return f"Goalkeeper: {self.player} - Match: {self.match}"

@@ -1,3 +1,9 @@
+import sys
+import os
+import django
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')  # Replace with your actual settings path
+django.setup()
 from myapp.dal import TeamStatsDao, TeamStatsPartsDao, MatcheDao, TeamDao
 from myapp.entities import TeamStatsPartsModels
 from selenium import webdriver
@@ -28,10 +34,11 @@ def delete_team_stats(matchID) :
     
 @staticmethod
 def scraping_team_stats(link) :
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
 
     options = Options()
+    options.add_argument("--lang=fr")  #forcing to be french language
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     options.add_argument('--ignore-certificate-errors')
@@ -280,6 +287,7 @@ def scraping_team_stats(link) :
         matcheID = MatcheDao.get_matche_by_date(matcheDate).id
         print(f"this is the match id : {matcheID}")
         sommaireID = TeamStatsPartsDao.add_sommaire(sommaire)
+        print(f"summary : {sommaire}")
         tirsID = TeamStatsPartsDao.add_tirs(tirs)
         attaqueID = TeamStatsPartsDao.add_attaque(attaque)
         passesID = TeamStatsPartsDao.add_passes(passes)
@@ -309,3 +317,6 @@ def scraping_team_stats(link) :
 
 # strptime() – Convert String to Datetime
 # strftime() – Convert Datetime to String
+
+
+#scraping_team_stats('https://www.sofascore.com/fr/football/match/lesotho-morocco/DVbsIkd#id:12526724,tab:statistics')

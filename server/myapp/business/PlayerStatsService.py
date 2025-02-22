@@ -7,18 +7,20 @@ from selenium.webdriver.support import expected_conditions as EC
 import re
 import time
 from datetime import datetime
-""" import sys
+import sys
 import os
 import django
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')  # Replace with your actual settings path
-django.setup() """
+django.setup()
 from myapp.dal import MatcheDao
 from myapp.dal import PlayerDao
+from myapp.dal import PlayerStatsDao
 
 
 @staticmethod
 def scrap_players_stats():
+    PlayerStatsDao.clear_players()
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
     path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
@@ -57,7 +59,7 @@ def scrap_players_stats():
 
         players_data = []
         
-        for i in range(4,7):
+        for i in range(4,6):
             driver.execute_script("window.scrollTo(0, 0);") 
 
             for _ in range(2):  # Scroll 5 times (adjust as needed)
@@ -122,64 +124,102 @@ def scrap_players_stats():
                 wait = WebDriverWait(driver, 10) 
                 # Stats to scrape (corrected based on your model)
                 stats_to_scrape = [
-                    "Minutes played", 
-                    "Shots on target", 
-                    "Shots off target", 
-                    "Shots blocked", 
-                    "Dribble attempts (succ.)", 
-                    "Touches", 
-                    "Accurate passes", 
-                    "Key passes", 
-                    "Crosses (acc.)", 
-                    "Long balls (acc.)", 
-                    "Clearances", 
-                    "Blocked shots", 
-                    "Interceptions", 
-                    "Total tackles", 
-                    "Dribbled past", 
-                    "Ground duels (won)", 
-                    "Aerial duels (won)", 
-                    "Fouls", 
-                    "Was fouled"
+                    "minutes_played",
+                    "shots_on_target",
+                    "shots_off_target",
+                    "shots_blocked",
+                    "dribble_attempts_successful",
+                    "touches",
+                    "accurate_passes",
+                    "key_passes",
+                    "crosses_accurate",
+                    "long_balls_accurate",
+                    "ground_duels_won",
+                    "aerial_duels_won",
+                    "fouls",
+                    "was_fouled",
+                    "clearances",
+                    "interceptions",
+                    "total_tackles",
+                    "dribbled_past"
                 ]
+
+                stat_name_mapping = {
+                    "minutes_played": "Minutes played",
+                    "shots_on_target": "Shots on target",
+                    "shots_off_target": "Shots off target",
+                    "shots_blocked": "Shots blocked",
+                    "dribble_attempts_successful": "Dribble attempts (succ.)",
+                    "touches": "Touches",
+                    "accurate_passes": "Accurate passes",
+                    "key_passes": "Key passes",
+                    "crosses_accurate": "Crosses (acc.)",
+                    "long_balls_accurate": "Long balls (acc.)",
+                    "ground_duels_won": "Ground duels (won)",
+                    "aerial_duels_won": "Aerial duels (won)",
+                    "fouls": "Fouls",
+                    "was_fouled": "Was fouled",
+                    "clearances": "Clearances",
+                    "interceptions": "Interceptions",
+                    "total_tackles": "Total tackles",
+                    "dribbled_past": "Dribbled past"
+                }
+
+                
+                try:
+                    player_row = {"player": aimed_player.pk, "match": scarped_match.pk, "rating": float(rating)}
+                except:
+                    continue
 
                 for stat_name in stats_to_scrape:
                     try:
+                        html_stat_name = stat_name_mapping.get(stat_name, stat_name)
+
                         # Locate the stat element based on the stat name and extract its value
                         stat_element = wait.until(EC.presence_of_element_located(
-                        (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{stat_name}"]]/span')
+                            (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{html_stat_name}"]]/span')
                         ))
-                        stat_value = stat_element.text  # Get the stat value
-                        # Extract only numbers using regex
-                        cleaned_value = re.findall(r'\d+', stat_value)  # Finds all numbers in the text
-                        
-                        # Convert to an integer if there's a number found, else set it to 0
-                        final_value = int(cleaned_value[0]) if cleaned_value else 0  
+                        stat_value = stat_element.text  # Get the raw stat value
 
-                        print(f'{stat_name}: {final_value}')  # Print cleaned stat
+                        # Special handling for accurate_passes / total_passes
+                        if stat_name == "accurate_passes":
+                            match = re.findall(r'(\d+)/(\d+)', stat_value)  # Extract "53/56" numbers
+                            if match:
+                                accurate, total = map(int, match[0])
+                                player_row.update({"accurate_passes": accurate, "total_passes": total})
+                            else:
+                                player_row.update({"accurate_passes": 0, "total_passes": 0})  # Default if parsing fails
+
+                        else:
+                            # Extract only numbers using regex for other stats
+                            cleaned_value = re.findall(r'\d+', stat_value)
+                            final_value = int(cleaned_value[0]) if cleaned_value else 0  
+                            player_row.update({stat_name: final_value})
+
                     except Exception as e:
-                        print(f'Error extracting {stat_name}: {e}')
-                        
+                        player_row.update({stat_name: 0})
+
+                PlayerStatsDao.add_player_stats(player_row)  
                 close_button = player.find_element(By.XPATH, '//button[contains(@class, "Button RVwfR")]')
                 close_button.click()
             #---------------------------------------getting substituted players data----------------------------------------
             morocco_element = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, "//div[img[contains(@alt, 'Morocco')][@class='Img fTultb']]"))
             )
-            print("working 1")
+            
             driver.execute_script("arguments[0].scrollIntoView();", morocco_element)
             morocco_element.click()
-            print("working 2")
+            
 
             #avoiding stale element after clicking on morocco tab
             players = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, '//div[@cursor="pointer"]')))
             sub_players = players[24:30]
-            print("working 3")
+            
             for player in sub_players:
-                print("working 4")
+                
                 # Scroll to bring the player into view
                 driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", player)
-                print("working 5")
+                
                 # Extract the number
                 player_number = player.find_element(By.XPATH, './/bdi[@class="Box ewxwAz"]').text
                 print("Player Number:", player_number) 
@@ -219,43 +259,81 @@ def scrap_players_stats():
                 wait = WebDriverWait(driver, 10) 
                 # Stats to scrape (corrected based on your model)
                 stats_to_scrape = [
-                    "Minutes played", 
-                    "Shots on target", 
-                    "Shots off target", 
-                    "Shots blocked", 
-                    "Dribble attempts (succ.)", 
-                    "Touches", 
-                    "Accurate passes", 
-                    "Key passes", 
-                    "Crosses (acc.)", 
-                    "Long balls (acc.)", 
-                    "Clearances", 
-                    "Blocked shots", 
-                    "Interceptions", 
-                    "Total tackles", 
-                    "Dribbled past", 
-                    "Ground duels (won)", 
-                    "Aerial duels (won)", 
-                    "Fouls", 
-                    "Was fouled"
+                    "minutes_played",
+                    "shots_on_target",
+                    "shots_off_target",
+                    "shots_blocked",
+                    "dribble_attempts_successful",
+                    "touches",
+                    "accurate_passes",
+                    "key_passes",
+                    "crosses_accurate",
+                    "long_balls_accurate",
+                    "ground_duels_won",
+                    "aerial_duels_won",
+                    "fouls",
+                    "was_fouled",
+                    "clearances",
+                    "interceptions",
+                    "total_tackles",
+                    "dribbled_past"
                 ]
+
+                stat_name_mapping = {
+                    "minutes_played": "Minutes played",
+                    "shots_on_target": "Shots on target",
+                    "shots_off_target": "Shots off target",
+                    "shots_blocked": "Shots blocked",
+                    "dribble_attempts_successful": "Dribble attempts (succ.)",
+                    "touches": "Touches",
+                    "accurate_passes": "Accurate passes",
+                    "key_passes": "Key passes",
+                    "crosses_accurate": "Crosses (acc.)",
+                    "long_balls_accurate": "Long balls (acc.)",
+                    "ground_duels_won": "Ground duels (won)",
+                    "aerial_duels_won": "Aerial duels (won)",
+                    "fouls": "Fouls",
+                    "was_fouled": "Was fouled",
+                    "clearances": "Clearances",
+                    "interceptions": "Interceptions",
+                    "total_tackles": "Total tackles",
+                    "dribbled_past": "Dribbled past"
+                }
+
+                try:
+                    player_row = {"player": aimed_player.pk, "match": scarped_match.pk, "rating": float(rating)}
+                except:
+                    continue
 
                 for stat_name in stats_to_scrape:
                     try:
+                        html_stat_name = stat_name_mapping.get(stat_name, stat_name)
+
                         # Locate the stat element based on the stat name and extract its value
                         stat_element = wait.until(EC.presence_of_element_located(
-                        (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{stat_name}"]]/span')
+                            (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{html_stat_name}"]]/span')
                         ))
-                        stat_value = stat_element.text  # Get the stat value
-                        # Extract only numbers using regex
-                        cleaned_value = re.findall(r'\d+', stat_value)  # Finds all numbers in the text
-                        
-                        # Convert to an integer if there's a number found, else set it to 0
-                        final_value = int(cleaned_value[0]) if cleaned_value else 0  
+                        stat_value = stat_element.text  # Get the raw stat value
 
-                        print(f'{stat_name}: {final_value}')  # Print cleaned stat
+                        # Special handling for accurate_passes / total_passes
+                        if stat_name == "accurate_passes":
+                            match = re.findall(r'(\d+)/(\d+)', stat_value)  # Extract "53/56" numbers
+                            if match:
+                                accurate, total = map(int, match[0])
+                                player_row.update({"accurate_passes": accurate, "total_passes": total})
+                            else:
+                                player_row.update({"accurate_passes": 0, "total_passes": 0})  # Default if parsing fails
+
+                        else:
+                            # Extract only numbers using regex for other stats
+                            cleaned_value = re.findall(r'\d+', stat_value)
+                            final_value = int(cleaned_value[0]) if cleaned_value else 0  
+                            player_row.update({stat_name: final_value})
+
                     except Exception as e:
-                        print(f'Error extracting {stat_name}: {e}')
+                        player_row.update({stat_name: 0})
+
+                PlayerStatsDao.add_player_stats(player_row)
                 close_button = player.find_element(By.XPATH, '//button[contains(@class, "Button RVwfR")]')
                 close_button.click()
 
@@ -286,7 +364,7 @@ def scrap_players_stats():
 
         driver.quit()
     except Exception as e:
-        print(f'a temporary error happened, please try again later, make sure your connection is stable')
+        print(f'a temporary error happened, please try again later, make sure your connection is stable, more detail ==={e}===')
 
 
 
@@ -301,6 +379,7 @@ def scrap_players_stats():
 
 @staticmethod
 def scrap_goalkeeper_stats():
+    PlayerStatsDao.clear_goalkeepers()
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
     path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
@@ -402,20 +481,38 @@ def scrap_goalkeeper_stats():
 
             wait = WebDriverWait(driver, 10) 
             stats_to_scrape = [
-                "Minutes played", 
-                "Saves", 
-                "Saves from inside box", 
-                "Clearances", 
-                "Blocked shots", 
-                "Shots on target", 
-                "Shots off target"
+                "minutes_played",
+                "saves",
+                "saves_from_inside_box",
+                "clearances",
+                "blocked_shots",
+                "shots_on_target",
+                "shots_off_target"
             ]
+
+            stat_name_mapping = {
+                "minutes_played": "Minutes played",
+                "saves": "Saves",
+                "saves_from_inside_box": "Saves from inside box",
+                "clearances": "Clearances",
+                "blocked_shots": "Blocked shots",
+                "shots_on_target": "Shots on target",
+                "shots_off_target": "Shots off target"
+            }
+
+            try:
+                player_row = {"player": aimed_player.pk, "match": scarped_match.pk, "rating": float(rating)}
+            except:
+                continue
 
             for stat_name in stats_to_scrape:
                 try:
+
+                    html_stat_name = stat_name_mapping.get(stat_name, stat_name) 
+
                     # Locate the stat element based on the stat name and extract its value
                     stat_element = wait.until(EC.presence_of_element_located(
-                    (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{stat_name}"]]/span')
+                    (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{html_stat_name}"]]/span')
                     ))
                     stat_value = stat_element.text  # Get the stat value
                     # Extract only numbers using regex
@@ -424,10 +521,11 @@ def scrap_goalkeeper_stats():
                     # Convert to an integer if there's a number found, else set it to 0
                     final_value = int(cleaned_value[0]) if cleaned_value else 0  
 
-                    print(f'{stat_name}: {final_value}')  # Print cleaned stat
+                    player_row.update({stat_name: int(final_value)})  # Print cleaned stat
                 except Exception as e:
-                    print(f'Error extracting {stat_name}: {e}')
+                    player_row.update({stat_name: 0})
                     
+            PlayerStatsDao.add_goalkeeper_stats(player_row)          
             close_button = player.find_element(By.XPATH, '//button[contains(@class, "Button RVwfR")]')
             close_button.click()
 
@@ -486,20 +584,38 @@ def scrap_goalkeeper_stats():
                 wait = WebDriverWait(driver, 10) 
                 # Stats to scrape (corrected based on your model)
                 stats_to_scrape = [
-                "Minutes played", 
-                "Saves", 
-                "Saves from inside box", 
-                "Clearances", 
-                "Blocked shots", 
-                "Shots on target", 
-                "Shots off target"
-            ]
+                    "minutes_played",
+                    "saves",
+                    "saves_from_inside_box",
+                    "clearances",
+                    "blocked_shots",
+                    "shots_on_target",
+                    "shots_off_target"
+                ]
+
+                stat_name_mapping = {
+                    "minutes_played": "Minutes played",
+                    "saves": "Saves",
+                    "saves_from_inside_box": "Saves from inside box",
+                    "clearances": "Clearances",
+                    "blocked_shots": "Blocked shots",
+                    "shots_on_target": "Shots on target",
+                    "shots_off_target": "Shots off target"
+                }
+                
+                try:
+                    player_row = {"player": aimed_player.pk, "match": scarped_match.pk, "rating": float(rating)}
+                except:
+                    continue
 
                 for stat_name in stats_to_scrape:
                     try:
+
+                        html_stat_name = stat_name_mapping.get(stat_name, stat_name) 
+
                         # Locate the stat element based on the stat name and extract its value
                         stat_element = wait.until(EC.presence_of_element_located(
-                        (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{stat_name}"]]/span')
+                        (By.XPATH, f'//div[contains(@class, "Box Flex dlyXLO bnpRyo")][div[text()="{html_stat_name}"]]/span')
                         ))
                         stat_value = stat_element.text  # Get the stat value
                         # Extract only numbers using regex
@@ -508,9 +624,11 @@ def scrap_goalkeeper_stats():
                         # Convert to an integer if there's a number found, else set it to 0
                         final_value = int(cleaned_value[0]) if cleaned_value else 0  
 
-                        print(f'{stat_name}: {final_value}')  # Print cleaned stat
+                        player_row.update({stat_name: int(final_value)})  # Print cleaned stat
                     except Exception as e:
-                        print(f'Error extracting {stat_name}: {e}')
+                        player_row.update({stat_name: 0})
+
+                PlayerStatsDao.add_goalkeeper_stats(player_row)
                 close_button = player.find_element(By.XPATH, '//button[contains(@class, "Button RVwfR")]')
                 close_button.click()
 
@@ -529,7 +647,9 @@ def scrap_goalkeeper_stats():
             except:
                 pass
 
-            results_tab = driver.find_element(By.XPATH, '//button[contains(@class, "Chip hBXmOq")]')
+            results_tab = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, '//button[contains(@class, "Chip hBXmOq")]'))
+            )
             driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", results_tab) 
             
             results_tab.click()
@@ -540,7 +660,7 @@ def scrap_goalkeeper_stats():
 
         driver.quit()
     except Exception as e:
-        print(f'a temporary error happened, please try again later, make sure your connection is stable')
+        print(f'a temporary error happened, please try again later, make sure your connection is stable, more detail ==={e}===')
 
 
-scrap_goalkeeper_stats()
+#scrap_goalkeeper_stats()
