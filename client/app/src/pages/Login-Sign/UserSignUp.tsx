@@ -63,17 +63,18 @@ export default function SignUp() {
 
   return (
     <>
-      <div className="flex justify-center items-center bg-gray-800">
+      <div className="h-screen flex justify-center items-center bg-black relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-purple-900/20 to-black opacity-50"></div>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="my-4 py-11 mx-1 px-4 sm:p-11 md:w-1/2 lg:w-1/3 bg-transparent border border-gray-100 rounded-xl flex flex-col justify-center items-center"
+          className="relative my-24 py-11 mx-1 px-4 sm:p-11 md:w-1/2 lg:w-1/3 bg-black/30 backdrop-blur-lg border border-gray-800 shadow-lg shadow-purple-500/30 rounded-2xl flex flex-col justify-center items-center"
         >
-          <h2 className="pb-7 font-manrope font-bold text-3xl text-white">
+          <h2 className="pb-7 font-manrope font-bold text-4xl text-white drop-shadow-md">
             Sign Up to Kick-Insights
           </h2>
           <input
             {...register("username", { required: true })}
-            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-2 rounded-lg"
+            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-purple-500"
             type="text"
             placeholder="Username"
           />
@@ -83,13 +84,13 @@ export default function SignUp() {
               setPass1(e.target.value);
               register("password").onChange(e);
             }}
-            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-2 rounded-lg"
+            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-purple-500"
             type="password"
             placeholder="Password"
           />
           <input
             onChange={(e) => setPass2(e.target.value)}
-            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-2 rounded-lg"
+            className="text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-3 rounded-lg border border-gray-700 focus:ring-2 focus:ring-purple-500"
             type="password"
             placeholder="Confirm Password"
           />
@@ -111,12 +112,12 @@ export default function SignUp() {
           <div className="mt-2 flex justify-start items-center cursor-pointer w-full">
             <input
               onChange={(e) => setIsChecked(e.target.checked)}
-              className="mr-2"
+              className="mr-2 accent-purple-500"
               type="checkbox"
             />
             <span className="font-manrope font-medium text-sm text-gray-400">
-              i agree with{" "}
-              <span className="hover:no-underline underline text-blue-400">
+              I agree with{" "}
+              <span className="hover:no-underline underline text-purple-400">
                 terms and conditions
               </span>
             </span>
@@ -124,14 +125,14 @@ export default function SignUp() {
 
           <button
             type="submit"
-            className="disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-90 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 mt-5 text-white font-manrope font-bold text-md bg-gray-900 w-full p-2 rounded-lg"
+            className="disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 mt-5 text-white font-manrope font-bold text-md w-full p-3 rounded-lg shadow-lg shadow-purple-500/30 transition-transform transform hover:scale-105"
             disabled={!isChecked}
           >
             Sign Up
           </button>
           <Link
             to={"/manager-sign-up"}
-            className="hover:bg-gray-950 bg-transparent mt-2 border-2 border-gray-700 text-white text-center font-manrope font-bold text-md  w-full p-2 rounded-lg"
+            className="hover:bg-gray-950 bg-transparent mt-2 border-2 border-gray-700 text-white text-center font-manrope font-bold text-md w-full p-3 rounded-lg transition-transform transform hover:scale-105"
           >
             Sign up as Manager
           </Link>
@@ -139,7 +140,7 @@ export default function SignUp() {
             Already have an account?{" "}
             <Link
               to="/login"
-              className="hover:no-underline underline text-blue-400"
+              className="hover:no-underline underline text-purple-400"
             >
               Log in
             </Link>

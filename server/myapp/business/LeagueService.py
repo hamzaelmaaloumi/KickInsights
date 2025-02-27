@@ -32,7 +32,7 @@ def deleteLeague(name) :
 @staticmethod
 def scraping_leagues() :
     website = "https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches"
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
 
     options = Options()
@@ -169,3 +169,6 @@ def scrap_players_leagues():
 
     driver.quit()
     return leagues  
+
+
+#scraping_leagues()

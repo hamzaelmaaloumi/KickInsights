@@ -18,6 +18,16 @@ class httpService {
     return { request, controller };
   }
 
+  public getById(id: number){
+    const controller = new AbortController();
+    let request = axios.get(BASE_URL + this.endpoint + "/" + id, {
+      signal: controller.signal,
+    });
+
+    return request;
+  }
+
+
   public add<T>(entity: T) {
     return axios.post(BASE_URL + this.endpoint + "/create", entity);
   }

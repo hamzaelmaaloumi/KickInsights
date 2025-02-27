@@ -7,31 +7,38 @@ import NotFound from "../components/NotFound";
 import Layout from "../pages/Layout";
 import DashboardLayout from "../pages/Admin/DashboardLayout";
 import Players from "../pages/Admin/Players";
+<<<<<<< HEAD
 import Leagues from "../pages/Admin/Leagues";
 import Teams from "../pages/Admin/Teams";
 import Dashboard from "../pages/Admin/Dashboard";
 import Managers from "../pages/Admin/Managers";
 import Squad from "../pages/Manager/Squad";
+=======
+import Match from "../pages/Match/Match";
+import Stats from "../pages/Match/Stats";
+import Squad from "../pages/squad/Squad";
+>>>>>>> origin/master
 
 export const routers = createBrowserRouter([
   {
     element: <Layout />,
+    path: "/",
     children: [
       {
-        path: "/",
+        index: true,
         element: <GuestHome />,
       },
       {
-        path: "/login",
-        element: <Login />,
+        path: "match",
+        element: <Match/>
       },
       {
-        path: "/manager-sign-up",
-        element: <ManagerSignUp />,
+        path: "stats/:matchId",
+        element: <Stats />
       },
       {
-        path: "/user-sign-up",
-        element: <UserSignUp />, ///
+        path: "squad",
+        element: <Squad />
       },
       { path: "/squad", element: <Squad /> },
       {
@@ -68,5 +75,17 @@ export const routers = createBrowserRouter([
         element: <NotFound />,
       },
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/manager-sign-up",
+    element: <ManagerSignUp />,
+  },
+  {
+    path: "/user-sign-up",
+    element: <UserSignUp />, ///
   },
 ]);

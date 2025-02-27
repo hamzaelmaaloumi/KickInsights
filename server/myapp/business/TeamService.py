@@ -1,3 +1,9 @@
+import sys
+import os
+import django
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')  # Replace with your actual settings path
+django.setup()
 from myapp.dal import TeamDao, PlayerDao, PlaysDao
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -33,7 +39,7 @@ def deleteTeam(name) :
 @staticmethod
 def scraping_teams() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches'
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
     
     options = Options()
@@ -185,4 +191,4 @@ def scraping_players_teams() :
     return teams
         
     
-    
+#scraping_teams()

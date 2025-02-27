@@ -1,4 +1,3 @@
-import React from "react";
 import flag from "../../assets/icon.png";
 import { useState } from "react";
 import { Link } from "react-router-dom";
