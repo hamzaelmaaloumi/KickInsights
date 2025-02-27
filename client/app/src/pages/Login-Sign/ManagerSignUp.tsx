@@ -90,10 +90,10 @@ export default function ManagerSignUp() {
 
   return (
     <>
-      <div className="flex justify-center items-center bg-gray-800">
+      <div className="flex justify-center items-center bg-black">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="my-14 py-11 px-4 sm:px-11 mx-2 sm:mx-0 w-full sm:w-5/6 md:w-4/6 lg:w-1/2 bg-transparent border border-gray-100 rounded-xl flex flex-col justify-center items-center"
+          className="my-14 py-11 px-4 sm:px-11 mx-2 sm:mx-0 w-full sm:w-5/6 md:w-4/6 lg:w-1/2 bg-transparent border border-gray-800 rounded-xl flex flex-col justify-center items-center"
         >
           <h2 className="font-manrope font-bold text-indigo-500 text-3xl border-b border-gray-400 w-full pb-8">
             Create Your Manager Account

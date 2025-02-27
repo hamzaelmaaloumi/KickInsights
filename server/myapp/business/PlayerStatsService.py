@@ -18,6 +18,29 @@ from myapp.dal import PlayerDao
 from myapp.dal import PlayerStatsDao
 
 
+
+
+@staticmethod
+def get_all_player_stats():
+    try:
+        playerstats = PlayerStatsDao.get_all_player_stats()
+        return playerstats
+    except Exception as e:
+        raise e
+
+
+@staticmethod
+def get_all_goalkeeper_stats():
+    try:
+        goalkeeperstats = PlayerStatsDao.get_all_goalkeeper_stats()
+        return goalkeeperstats
+    except Exception as e:
+        raise e
+
+
+
+
+
 @staticmethod
 def scrap_players_stats():
     PlayerStatsDao.clear_players()
@@ -26,7 +49,7 @@ def scrap_players_stats():
     service = Service(path)
 
     options = Options()
-    """ options.add_argument('--headless')  # Run in headless mode """
+    options.add_argument('--headless')  # Run in headless mode
     options.add_argument('--disable-gpu')  # Disable GPU acceleration
     options.add_argument('--disable-gpu')
     options.add_argument('--ignore-certificate-errors')
@@ -364,7 +387,8 @@ def scrap_players_stats():
 
         driver.quit()
     except Exception as e:
-        print(f'a temporary error happened, please try again later, make sure your connection is stable, more detail ==={e}===')
+        print(f'a temporary error happened, please try again later, make sure your connection is stable')
+        raise e
 
 
 
@@ -385,7 +409,7 @@ def scrap_goalkeeper_stats():
     service = Service(path)
 
     options = Options()
-    """ options.add_argument('--headless')  # Run in headless mode """
+    options.add_argument('--headless')  # Run in headless mode
     options.add_argument('--disable-gpu')  # Disable GPU acceleration
     options.add_argument('--disable-gpu')
     options.add_argument('--ignore-certificate-errors')
@@ -660,7 +684,7 @@ def scrap_goalkeeper_stats():
 
         driver.quit()
     except Exception as e:
-        print(f'a temporary error happened, please try again later, make sure your connection is stable, more detail ==={e}===')
+        print(f'a temporary error happened, please try again later, make sure your connection is stable')
+        raise e
 
 
-#scrap_goalkeeper_stats()

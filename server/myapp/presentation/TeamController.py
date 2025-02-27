@@ -19,6 +19,12 @@ def getAllteams(request) :
     serializer = TeamSerializer(teams, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def getTeamById(request, team_id):
+    team = TeamService.get_team_by_id(team_id)
+    serializer = TeamSerializer(team, many=False)
+    return Response(serializer.data)
+
 @api_view(['POST'])
 def addTeam(request) :
     try :

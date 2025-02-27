@@ -21,7 +21,7 @@ def get_all_stats() :
     return TeamStatsDao.get_all_stats()
 
 @staticmethod
-def get_team_stats_by_team_id(matchID) :
+def get_team_stats_by_match_id(matchID) :
     return TeamStatsDao.get_team_stats_by_match_id(matchID)
 
 @staticmethod

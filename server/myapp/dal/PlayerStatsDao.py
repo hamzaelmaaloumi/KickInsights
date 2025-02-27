@@ -2,8 +2,12 @@ from myapp.entities import PlayerStatsModel
 from myapp.presentation.serializers import PlayerStatsSerializer, GoalkeeperStatsSerializer
 
 @staticmethod
-def get_all_stats() :
+def get_all_player_stats() :
     return PlayerStatsModel.PlayerStats.objects.all()
+
+@staticmethod
+def get_all_goalkeeper_stats() :
+    return PlayerStatsModel.GoalkeeperStats.objects.all()
 
 @staticmethod
 def get_player_stats_by_match_id(matchID) :

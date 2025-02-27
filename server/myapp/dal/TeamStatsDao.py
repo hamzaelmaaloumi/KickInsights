@@ -7,7 +7,7 @@ def get_all_stats() :
 
 @staticmethod
 def get_team_stats_by_match_id(matchID) :
-    return TeamStatsModel.TeamStats.objects.filter(id = matchID)
+    return TeamStatsModel.TeamStats.objects.filter(matcheID_id = matchID).first()
 
 @staticmethod
 def add_team_stats(teamStats) :

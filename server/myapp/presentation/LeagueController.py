@@ -16,6 +16,12 @@ def getAllLeagues(request) :
     serializer = LeagueSerializer(players, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def getLeagueById(request, league_id):
+    league = LeagueService.get_league_by_id(league_id)
+    serializer = LeagueSerializer(league, many=False)
+    return Response(serializer.data)
+
 @api_view(['POST'])
 def addLeague(request) :
     try : 

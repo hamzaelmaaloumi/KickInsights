@@ -30,7 +30,10 @@ def get_tirs_by_id(tirsID) :
 
 @staticmethod
 def get_sommaire_by_id(sommaireID) :
-    return TeamStatsPartsDao.get_sommaire_by_id(sommaireID)
+    try:
+        return TeamStatsPartsDao.get_sommaire_by_id(sommaireID)
+    except :
+        print(f"service says : {Exception}")
 
 @staticmethod
 def get_gardien_de_but_by_id(goalkeepingID) :
