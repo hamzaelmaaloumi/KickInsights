@@ -12,8 +12,8 @@ def scraping_leagues(request) :
 
 @api_view(['GET'])
 def getAllLeagues(request) :
-    players = LeagueService.getAllLeagues()
-    serializer = LeagueSerializer(players, many=True)
+    leagues = LeagueService.getAllLeagues()
+    serializer = LeagueSerializer(leagues, many=True)
     return Response(serializer.data)
 
 @api_view(['POST'])

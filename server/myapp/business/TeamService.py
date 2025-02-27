@@ -125,7 +125,8 @@ def scraping_teams() :
                     "entraineur": entraineur,
                     "classement": classement,
                     "joueurs_total": joueurs_total,
-                    "moyenne_age": moyenne_age.split()[0]
+                    "moyenne_age": moyenne_age.split()[0],
+                    "type" : "national"
                 })
             except Exception as e :
                 print(f"Error with team href: {e}")
@@ -174,6 +175,7 @@ def scraping_players_teams() :
         team = {
             "image": teamImage.get_attribute("src"),
             "name": teamName.text,
+            "type" : "club"
         }
         teams.append(team)
         teamID = TeamDao.add_team(team)

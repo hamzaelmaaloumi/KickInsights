@@ -6,7 +6,7 @@ import Footer from "./Footer";
 export default function NotFound() {
   return (
     <>
-      <div className="my-9 md:my-0 flex flex-col md:flex-row justify-between px-1 md:px-9 lg:px-20 xl:px-32 items-center bg-gray-800">
+      <div className="h-screen my-9 md:my-0 flex flex-col md:flex-row justify-between px-1 md:px-9 lg:px-20 xl:px-32 items-center bg-gray-800">
         <div className="w-2/2 flex flex-col justify-center items-center gap-6 text-white font-bold font-manrope">
           <span className="text-center text-7xl">404-ERROR</span>
           <span className="text-2xl">PAGE NOT FOUND</span>

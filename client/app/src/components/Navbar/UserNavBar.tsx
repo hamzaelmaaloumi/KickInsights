@@ -43,7 +43,7 @@ const UserNavBar = () => {
             Matches
           </NavLink>
           <NavLink
-            to="/"
+            to="/squad"
             className="transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500 "
           >
             Squad

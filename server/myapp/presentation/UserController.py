@@ -18,3 +18,7 @@ def addUser(request) :
 @api_view(['POST'])
 def loginUser(request) :
     return UserService.loginUser(request, request.data)
+
+@api_view(['GET'])
+def user(request) :
+    return Response(UserService.user(request))

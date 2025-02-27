@@ -1,3 +1,4 @@
+from django.db.models import Count
 from myapp.entities import PlayerModel
 from myapp.presentation.serializers import PlayerSerializer
 
@@ -41,3 +42,7 @@ def clearPlayers() :
 @staticmethod
 def get_players_links() :
     return PlayerModel.Player.objects.values_list('link', flat=True)
+
+@staticmethod
+def get_positions() :
+    return PlayerModel.Player.objects.values('position').annotate(count = Count('position'))

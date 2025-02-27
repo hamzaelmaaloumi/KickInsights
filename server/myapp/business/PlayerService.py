@@ -43,6 +43,7 @@ def get_all_players_with_team() :
                 "name" : player.player_name,
                 "age" : player.age,
                 "position" : player.position,
+                "team_name" : team.name,
                 "team" : team.image
             })
     return players
@@ -115,3 +116,17 @@ def scraping_players() :
             print("problem while inserting player")
     
     return players
+
+@staticmethod
+def get_positions() :
+    positions = PlayerDao.get_positions()
+    custom_sort = ["Ailier","Milieu de terrain","Défenseur","Gardien de but"]
+    sorted_positions = []
+    
+    for position_name in custom_sort:
+        for position in positions:
+            if position["position"] == position_name:
+                sorted_positions.append(position)
+                break
+        
+    return sorted_positions

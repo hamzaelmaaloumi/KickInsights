@@ -7,9 +7,18 @@ import axios from "axios";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 
+axios.defaults.withCredentials = true;
+
 interface formData {
   username: string;
   password: string;
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+  return null;
 }
 
 export default function Login() {
@@ -27,9 +36,21 @@ export default function Login() {
     formState: { errors },
   } = useForm<formData>();
 
-  const onSubmit = (data: formData) => {
-    axios.post("http://127.0.0.1:8000/myapp/user/login", data).then((res) => {
+  const onSubmit = async (data: formData) => {
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:8000/myapp/user/login/",
+        data,
+        {
+          withCredentials: true,
+        }
+      );
+
       if (res.data.authenticated) {
+        const token = res.data.jwt;
+        document.cookie = `jwt=${token}; path=/; Secure; SameSite=None`;
+        localStorage.setItem("token", token);
+
         setUser({
           id: res.data.user_id,
           username: res.data.username,
@@ -38,12 +59,17 @@ export default function Login() {
           isManager: res.data.is_manager,
           isAdmin: false,
         });
-        return navigate("/");
+
+        navigate("/"); // Redirect after successful login
       } else {
         setError(true);
         setTimeout(() => setError(false), 3000);
       }
-    });
+    } catch (error) {
+      console.error("Login failed:", error);
+      setError(true);
+      setTimeout(() => setError(false), 3000);
+    }
   };
 
   console.log(user);

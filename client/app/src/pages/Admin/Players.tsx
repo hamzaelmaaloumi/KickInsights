@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import IsLoading from "../../components/IsLoading";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
 import Pagination from "../../components/Pagination";
-const API_URL = "http://127.0.0.1:8000/myapp/getPlayersTeams/";
+const API_URL = "http://127.0.0.1:8000/myapp/";
 
 const fetchPlayers = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await axios.get(API_URL + "getPlayersTeams/");
     return response.data;
   } catch (error) {
     console.error("Error fetching players:", error);
@@ -17,15 +17,41 @@ const fetchPlayers = async () => {
   }
 };
 
+const fetchPositions = async () => {
+  try {
+    const response = await axios.get(API_URL + "getPositions/");
+    return response.data;
+  } catch (error) {
+    console.log("error fetching position : ", error);
+    return [];
+  }
+};
+
+interface Player {
+  image: string;
+  name: string;
+  age: number;
+  position: string;
+  team_name: string;
+  team: string;
+}
+
 const Players = () => {
-  const [players, setPlayers] = useState([]);
+  const [filterDropdown, setFilterDropdown] = useState(false);
+
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [filterItems, setFilterItems] = useState([]);
+  const [chosenFilters, setChosenFilters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [postPerPage, setPostPerPage] = useState(10);
 
   const lastPostIndex = currentPage * postPerPage;
   const firstPostindex = lastPostIndex - postPerPage;
+
+  let filterDropdownRef = useRef();
 
   useEffect(() => {
     const getPlayers = async () => {
@@ -39,13 +65,55 @@ const Players = () => {
         setIsLoading(false);
       }
     };
+
+    const getPositions = async () => {
+      try {
+        const positionData = await fetchPositions();
+        setFilterItems(positionData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     getPlayers();
+    getPositions();
   }, []);
 
-  const currentPost = players.slice(firstPostindex, lastPostIndex);
+  useEffect(() => {
+    let handler = (e) => {
+      if (!filterDropdownRef.current.contains(e.target)) {
+        setFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
+  });
+
+  const [filteredPlayers, setFilteredPlayers] = useState(players);
+
+  useEffect(() => {
+    console.log("Search changed:", search);
+
+    let updatedPlayers =
+      chosenFilters.length > 0
+        ? players.filter((player) => chosenFilters.includes(player.position))
+        : players;
+
+    updatedPlayers = updatedPlayers.filter((player) =>
+      player.name.toLowerCase().includes(search.toLowerCase())
+    );
+
+    setFilteredPlayers(updatedPlayers);
+  }, [search, players, chosenFilters]);
+
+  const currentPost = filteredPlayers.slice(firstPostindex, lastPostIndex);
 
   return (
-    <>
+    <div className="h-screen bg-gray-900">
       {isLoading ? (
         <div className="flex justify-center align-middle h-max">
           <IsLoading />
@@ -67,6 +135,10 @@ const Players = () => {
                       <input
                         type="text"
                         id="simple-search"
+                        value={search}
+                        onChange={(e) => {
+                          setSearch(e.target.value);
+                        }}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                         placeholder="Search"
                         required
@@ -76,133 +148,84 @@ const Players = () => {
                 </div>
                 <div className="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                   <div className="flex items-center space-x-3 w-full md:w-auto">
-                    <button
-                      id="actionsDropdownButton"
-                      data-dropdown-toggle="actionsDropdown"
-                      className="w-full md:w-auto flex items-center justify-center h-10 py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                      type="button"
-                    >
-                      <KeyboardArrowDownRoundedIcon className="text-gray-400 h-4 w-4 mr-2" />
-                      Actions
-                    </button>
-                    <div
-                      id="actionsDropdown"
-                      className="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600"
-                    >
-                      <ul
-                        className="py-1 text-sm text-gray-700 dark:text-gray-200"
-                        aria-labelledby="actionsDropdownButton"
+                    <div ref={filterDropdownRef}>
+                      <button
+                        id="filterDropdownButton"
+                        data-dropdown-toggle="filterDropdown"
+                        className="w-full md:w-auto flex items-center justify-center h-10 py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                        type="button"
+                        onClick={() => setFilterDropdown(!filterDropdown)}
                       >
-                        <li>
-                          <a
-                            href="#"
-                            className="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        <FilterAltRoundedIcon
+                          className="mr-2  relative"
+                          fontSize="small"
+                        />
+                        Filter
+                        <KeyboardArrowDownRoundedIcon className="text-gray-400" />
+                      </button>
+                      {filterDropdown && (
+                        <div className="absolute top-16 right-4">
+                          <div
+                            id="filterDropdown"
+                            className="z-10 w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
                           >
-                            Mass Edit
-                          </a>
-                        </li>
-                      </ul>
-                      <div className="py-1">
-                        <a
-                          href="#"
-                          className="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                        >
-                          Delete all
-                        </a>
-                      </div>
-                    </div>
-                    <button
-                      id="filterDropdownButton"
-                      data-dropdown-toggle="filterDropdown"
-                      className="w-full md:w-auto flex items-center justify-center h-10 py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                      type="button"
-                    >
-                      <FilterAltRoundedIcon className="mr-2" fontSize="small" />
-                      Filter
-                      <KeyboardArrowDownRoundedIcon className="text-gray-400" />
-                    </button>
-                    <div
-                      id="filterDropdown"
-                      className="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700"
-                    >
-                      <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                        Choose brand
-                      </h6>
-                      <ul
-                        className="space-y-2 text-sm"
-                        aria-labelledby="filterDropdownButton"
-                      >
-                        <li className="flex items-center">
-                          <input
-                            id="apple"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          />
-                          <label
-                            htmlFor="apple"
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                          >
-                            Apple (56)
-                          </label>
-                        </li>
-                        <li className="flex items-center">
-                          <input
-                            id="fitbit"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          />
-                          <label
-                            htmlFor="fitbit"
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                          >
-                            Microsoft (16)
-                          </label>
-                        </li>
-                        <li className="flex items-center">
-                          <input
-                            id="razor"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          />
-                          <label
-                            htmlFor="razor"
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                          >
-                            Razor (49)
-                          </label>
-                        </li>
-                        <li className="flex items-center">
-                          <input
-                            id="nikon"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          />
-                          <label
-                            htmlFor="nikon"
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                          >
-                            Nikon (12)
-                          </label>
-                        </li>
-                        <li className="flex items-center">
-                          <input
-                            id="benq"
-                            type="checkbox"
-                            value=""
-                            className="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                          />
-                          <label
-                            htmlFor="benq"
-                            className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                          >
-                            BenQ (74)
-                          </label>
-                        </li>
-                      </ul>
+                            <h6 className="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                              Choose position
+                            </h6>
+                            <ul
+                              className="space-y-2 text-sm"
+                              aria-labelledby="filterDropdownButton"
+                            >
+                              {filterItems.map((filterItem) => {
+                                return (
+                                  <li className="flex items-center">
+                                    <input
+                                      onClick={() => {
+                                        if (
+                                          chosenFilters.includes(
+                                            filterItem.position
+                                          )
+                                        ) {
+                                          setChosenFilters(
+                                            chosenFilters.filter(
+                                              (item) =>
+                                                item !== filterItem.position
+                                            )
+                                          );
+                                        } else {
+                                          setChosenFilters([
+                                            ...chosenFilters,
+                                            filterItem.position,
+                                          ]);
+                                        }
+                                      }}
+                                      id="apple"
+                                      type="checkbox"
+                                      value=""
+                                      checked={chosenFilters.includes(
+                                        filterItem.position
+                                      )}
+                                      className={`appearance-none w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500 ${
+                                        chosenFilters.includes(
+                                          filterItem.position
+                                        )
+                                          ? "text-primary-600"
+                                          : ""
+                                      }`}
+                                    />
+                                    <label
+                                      htmlFor="apple"
+                                      className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
+                                    >
+                                      {filterItem.position} ({filterItem.count})
+                                    </label>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -232,26 +255,31 @@ const Players = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {players.map((player) => {
+                    {currentPost.map((player) => {
                       return (
                         <tr className="border-b dark:border-gray-700">
-                          <th
-                            scope="row"
-                            className="px-4 py-3 h-4 w-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                          >
+                          <td className="px-4 py-3 h-4 w-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <img
                               className="rounded-full"
                               src={player.image}
                               alt="player image"
                             />
-                          </th>
-                          <td className="px-4 py-3 h-4 w-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            {player.name}
                           </td>
+                          <th
+                            scope="row"
+                            className="px-4 py-3 h-4 w-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          >
+                            {player.name}
+                          </th>
+
                           <td className="px-4 py-3">{player.age}</td>
                           <td className="px-4 py-3">{player.position}</td>
                           <td className="px-4 py-3 h-4 w-4">
-                            <img src={player.team} alt="player image" />
+                            <img
+                              title={player.team_name}
+                              src={player.team}
+                              alt="player image"
+                            />
                           </td>
                           <td className="px-4 py-3 flex items-center justify-end">
                             <button
@@ -312,7 +340,7 @@ const Players = () => {
                 </table>
               </div>
               <Pagination
-                totalPosts={players.length}
+                totalPosts={filteredPlayers.length}
                 postPerPages={postPerPage}
                 setCurrentPage={setCurrentPage}
                 currentPage={currentPage}
@@ -321,7 +349,7 @@ const Players = () => {
           </div>
         </section>
       )}
-    </>
+    </div>
   );
 };
 
