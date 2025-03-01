@@ -1,5 +1,6 @@
 from myapp.entities import MatcheModel
 from myapp.presentation.serializers import MatcheSerializer
+from myapp.dal import MatcheDao
 
 
 @staticmethod
@@ -18,9 +19,13 @@ def get_matche_by_date(matcheDate) :
 @staticmethod
 def addMatche(matche) :
     try :
+        if MatcheModel.Matche.objects.filter(date=matche["date"], teamA=matche["teamA"], teamB=matche["teamB"]).exists():
+            print("Match already exists!")
+            return None
         serializer = MatcheSerializer(data=matche)
         if serializer.is_valid() :
-            serializer.save()
+            obj = serializer.save()
+            return obj.id
     except Exception as e :
         print("error while inserting Matche")
         

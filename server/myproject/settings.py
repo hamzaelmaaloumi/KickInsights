@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-j#%zyst#$%@t8#8&#f8a@0(w64dxe^bew$#q1fwg#nd8(_6ro#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'kickinsights',  # this is the name
         'USER': 'postgres',
-        'PASSWORD': 'hamza',
+        'PASSWORD': '1234',
         'HOST': 'localhost',  # Replace with your PostgreSQL server's address if necessary
         'PORT': '',          # Leave empty to use the default PostgreSQL port (usually 5432)
     }
@@ -145,8 +145,21 @@ REST_FRAMEWORK = {
     ]
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # Allow React frontend
+]
+
+SESSION_COOKIE_SECURE = False 
+SESSION_COOKIE_SAMESITE = None 
+CSRF_COOKIE_SAMESITE = None
+CSRF_COOKIE_SECURE = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
@@ -154,3 +167,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'media'),
 )
+

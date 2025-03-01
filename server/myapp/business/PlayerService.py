@@ -34,8 +34,9 @@ def deletePlayer(name) :
 def get_all_players_with_team() :
     rows = PlaysDao.getAllRows()
     players = []
+    id = TeamDao.get_team_by_name('Maroc').pk
     for row in rows :
-        if row.teamID_id != 1 :
+        if row.teamID_id != id :
             player = PlayerDao.get_player_by_id(row.playerID_id)
             print(player.player_name)
             print(row.teamID_id)
@@ -45,6 +46,7 @@ def get_all_players_with_team() :
                 "name" : player.player_name,
                 "age" : player.age,
                 "position" : player.position,
+                "team_name" : team.name,
                 "team" : team.image
             })
     return players
@@ -54,7 +56,7 @@ def get_all_players_with_team() :
 @staticmethod
 def scraping_players() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
 
     options = Options()
@@ -117,3 +119,17 @@ def scraping_players() :
             print("problem while inserting player")
     
     return players
+
+@staticmethod
+def get_positions() :
+    positions = PlayerDao.get_positions()
+    custom_sort = ["Ailier","Milieu de terrain","Défenseur","Gardien de but"]
+    sorted_positions = []
+    
+    for position_name in custom_sort:
+        for position in positions:
+            if position["position"] == position_name:
+                sorted_positions.append(position)
+                break
+        
+    return sorted_positions
