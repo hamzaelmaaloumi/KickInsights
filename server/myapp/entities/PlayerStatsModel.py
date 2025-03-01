@@ -6,27 +6,6 @@ from myapp.entities.MatcheModel import Matche
 class PlayerStats(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     match = models.ForeignKey(Matche, on_delete=models.CASCADE)
-<<<<<<< HEAD
-    minutes_played = models.IntegerField(blank=True, null=True)
-    shots_on_target = models.IntegerField(blank=True, null=True)
-    shots_off_target = models.IntegerField(blank=True, null=True)
-    shots_blocked = models.IntegerField(blank=True, null=True)
-    dribble_attempts_successful = models.IntegerField(blank=True, null=True)
-    touches = models.IntegerField(blank=True, null=True)
-    accurate_passes = models.IntegerField(blank=True, null=True)
-    total_passes = models.IntegerField(blank=True, null=True)
-    key_passes = models.IntegerField(blank=True, null=True)
-    crosses_accurate = models.IntegerField(blank=True, null=True)
-    long_balls_accurate = models.IntegerField(blank=True, null=True)
-    ground_duels_won = models.IntegerField(blank=True, null=True)
-    aerial_duels_won = models.IntegerField(blank=True, null=True)
-    fouls = models.IntegerField(blank=True, null=True)
-    was_fouled = models.IntegerField(blank=True, null=True)
-    clearances = models.IntegerField(blank=True, null=True)
-    interceptions = models.IntegerField(blank=True, null=True)
-    total_tackles = models.IntegerField(blank=True, null=True)
-    dribbled_past = models.IntegerField(blank=True, null=True)
-=======
     minutes_played = models.IntegerField()
     shots_on_target = models.IntegerField()
     shots_off_target = models.IntegerField()
@@ -47,12 +26,10 @@ class PlayerStats(models.Model):
     total_tackles = models.IntegerField()
     dribbled_past = models.IntegerField()
     rating = models.FloatField()
->>>>>>> origin/master
 
     def __str__(self):
         return f"Player: {self.player} - Match: {self.match}"
 
-<<<<<<< HEAD
 class PlayerStatsWithTeam(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     match = models.ForeignKey(Matche, on_delete=models.CASCADE)
@@ -85,7 +62,6 @@ class PlayerStatsWithTeam(models.Model):
     degagements_des_poings = models.CharField(blank=True, null=True)
     sorties = models.CharField(blank=True, null=True)
     sorties_aeriennes = models.CharField(blank=True, null=True)
-=======
 
 
 
@@ -104,4 +80,3 @@ class GoalkeeperStats(models.Model):
 
     def __str__(self):
         return f"Goalkeeper: {self.player} - Match: {self.match}"
->>>>>>> origin/master

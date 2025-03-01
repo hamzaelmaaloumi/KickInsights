@@ -34,7 +34,7 @@ def deleteMatche(matcheID) :
 @staticmethod
 def scrapMatches() :
     website = "https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches"
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
 
     options = Options()

@@ -65,18 +65,11 @@ export default function Login() {
         setError(true);
         setTimeout(() => setError(false), 3000);
       }
-<<<<<<< HEAD
     } catch (error) {
       console.error("Login failed:", error);
       setError(true);
       setTimeout(() => setError(false), 3000);
     }
-=======
-    }).catch(() => {
-      setError(true);
-      setTimeout(() => setError(false), 3000);
-    })
->>>>>>> origin/master
   };
 
   console.log(user);
@@ -88,7 +81,7 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-radial from-indigo-900 via-black to-black opacity-50"></div>
         <div className="absolute top-0 left-0 w-72 h-72 bg-purple-600 blur-[120px] opacity-30"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-pink-600 blur-[120px] opacity-30"></div>
-  
+
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="relative z-10 bg-black bg-opacity-50 border border-gray-800 shadow-lg shadow-indigo-500/30 backdrop-blur-xl rounded-2xl p-8 sm:p-12 md:w-1/2 lg:w-1/3 flex flex-col items-center"
@@ -96,8 +89,10 @@ export default function Login() {
           <h2 className="pb-7 font-manrope font-bold text-4xl text-white tracking-wide drop-shadow-lg">
             Sign In to Kick-Insights
           </h2>
-          
-          <label className="w-full font-manrope font-semibold text-gray-300">Username</label>
+
+          <label className="w-full font-manrope font-semibold text-gray-300">
+            Username
+          </label>
           <input
             {...register("username", { required: true })}
             className="placeholder:font-medium text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-3 rounded-xl border border-gray-700 focus:ring-2 focus:ring-indigo-500 transition"
@@ -105,10 +100,14 @@ export default function Login() {
             placeholder="Enter your username"
           />
           {errors.username?.type === "required" && (
-            <span className="w-full font-manrope font-medium text-red-500 text-sm">Username is required</span>
+            <span className="w-full font-manrope font-medium text-red-500 text-sm">
+              Username is required
+            </span>
           )}
-          
-          <label className="mt-4 w-full font-manrope font-semibold text-gray-300">Password</label>
+
+          <label className="mt-4 w-full font-manrope font-semibold text-gray-300">
+            Password
+          </label>
           <input
             {...register("password", { required: true })}
             className="placeholder:font-medium text-white outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-3 rounded-xl border border-gray-700 focus:ring-2 focus:ring-pink-500 transition"
@@ -116,21 +115,25 @@ export default function Login() {
             placeholder="Enter your password"
           />
           {errors.password?.type === "required" && (
-            <span className="w-full font-manrope font-medium text-red-500 text-sm">Password is required</span>
+            <span className="w-full font-manrope font-medium text-red-500 text-sm">
+              Password is required
+            </span>
           )}
           {error && (
-            <span className="w-full font-manrope font-medium text-red-500 text-sm">Invalid username or password</span>
+            <span className="w-full font-manrope font-medium text-red-500 text-sm">
+              Invalid username or password
+            </span>
           )}
-  
+
           <button
             type="submit"
             className="mt-8 w-full py-3 rounded-xl font-manrope font-bold text-lg text-white bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-indigo-500/40 hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Login
           </button>
-  
+
           <span className="cursor-pointer mt-3 font-manrope font-medium text-sm text-gray-400">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <Link
               to="/user-sign-up"
               className="hover:no-underline underline text-blue-400 hover:text-indigo-300 transition"

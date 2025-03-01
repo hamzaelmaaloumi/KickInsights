@@ -34,8 +34,9 @@ def deletePlayer(name) :
 def get_all_players_with_team() :
     rows = PlaysDao.getAllRows()
     players = []
+    id = TeamDao.get_team_by_name('Maroc').pk
     for row in rows :
-        if row.teamID_id != 1 :
+        if row.teamID_id != id :
             player = PlayerDao.get_player_by_id(row.playerID_id)
             print(player.player_name)
             print(row.teamID_id)
@@ -55,7 +56,7 @@ def get_all_players_with_team() :
 @staticmethod
 def scraping_players() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
 
     options = Options()

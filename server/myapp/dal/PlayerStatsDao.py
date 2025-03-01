@@ -1,11 +1,8 @@
 from myapp.entities import PlayerStatsModel
-<<<<<<< HEAD
 from myapp.presentation.serializers import PlayerStatsSerializer, PlayerStatsWithTeamSerializer
 
 # with morocco
-=======
-from myapp.presentation.serializers import PlayerStatsSerializer, GoalkeeperStatsSerializer
->>>>>>> origin/master
+from myapp.presentation.serializers import GoalkeeperStatsSerializer
 
 @staticmethod
 def get_all_player_stats() :
@@ -44,7 +41,6 @@ def delete_player_stats(matchID) :
         stats.delete()
     except Exception as e :
         print("problem while deleting the player stats")
-<<<<<<< HEAD
         
         
 # with teams
@@ -67,7 +63,6 @@ def add_player_stats_with_team(player_stats) :
             print("serializer is not valid")
     except Exception as e :
         print("error while inserting player stats")
-=======
 
 @staticmethod
 def clear_players():
@@ -82,4 +77,3 @@ def clear_goalkeepers():
         PlayerStatsModel.GoalkeeperStats.objects.all().delete()
     except:
         print("problem while deleting the goalkeepers' stats")
->>>>>>> origin/master

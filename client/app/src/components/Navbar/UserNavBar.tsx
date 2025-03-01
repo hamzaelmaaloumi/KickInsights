@@ -37,35 +37,50 @@ const UserNavBar = () => {
 
         <div className="hidden lg:flex justify-between itmes-center gap-8">
           <NavLink
-            onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+            onClick={() => {
+              setIsSideBarOpen(false);
+              setOpen(!open);
+            }}
             to="/match"
-            className={({isActive})=> isActive ? "transition-all duration-300 text-white font-manrope font-bold":"transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"}
+            className={({ isActive }) =>
+              isActive
+                ? "transition-all duration-300 text-white font-manrope font-bold"
+                : "transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"
+            }
           >
             Matches
           </NavLink>
           <NavLink
-<<<<<<< HEAD
             to="/squad"
             className="transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500 "
-=======
-            onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
-            to="/"
-            className={({isActive})=> isActive ? "transition-all duration-300 text-white font-manrope font-bold":"transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"}
->>>>>>> origin/master
           >
             Squad
           </NavLink>
           <NavLink
-            onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+            onClick={() => {
+              setIsSideBarOpen(false);
+              setOpen(!open);
+            }}
             to="/"
-            className={({isActive})=> isActive ? "transition-all duration-300 text-white font-manrope font-bold":"transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"}
+            className={({ isActive }) =>
+              isActive
+                ? "transition-all duration-300 text-white font-manrope font-bold"
+                : "transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"
+            }
           >
             Top playes
           </NavLink>
           <NavLink
-            onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+            onClick={() => {
+              setIsSideBarOpen(false);
+              setOpen(!open);
+            }}
             to="/stats/:matchId"
-            className={({isActive})=> isActive ? "transition-all duration-300 text-white font-manrope font-bold":"transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"}
+            className={({ isActive }) =>
+              isActive
+                ? "transition-all duration-300 text-white font-manrope font-bold"
+                : "transition-all duration-300 hover:text-white font-manrope font-bold text-gray-500"
+            }
           >
             Statistics
           </NavLink>
@@ -117,28 +132,40 @@ const UserNavBar = () => {
         {isSideBarOpen && (
           <div className="z-10 fixed top-20 flex flex-col justify-between itmes-start gap-8 lg:hidden">
             <NavLink
-              onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+              onClick={() => {
+                setIsSideBarOpen(false);
+                setOpen(!open);
+              }}
               to="/match"
               className="hover:text-white font-manrope font-bold text-gray-500 "
             >
               Matches
             </NavLink>
             <NavLink
-              onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+              onClick={() => {
+                setIsSideBarOpen(false);
+                setOpen(!open);
+              }}
               to="/"
               className="hover:text-white font-manrope font-bold text-gray-500 "
             >
               Squad
             </NavLink>
             <NavLink
-              onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+              onClick={() => {
+                setIsSideBarOpen(false);
+                setOpen(!open);
+              }}
               to="/"
               className="hover:text-white font-manrope font-bold text-gray-500 "
             >
               Top playes
             </NavLink>
             <NavLink
-              onClick={()=> { setIsSideBarOpen(false); setOpen(!open) }}
+              onClick={() => {
+                setIsSideBarOpen(false);
+                setOpen(!open);
+              }}
               to="/stats/:matchId"
               className="hover:text-white font-manrope font-bold text-gray-500 "
             >

@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from myapp.business import PlayerStatsService
-<<<<<<< HEAD
 from .serializers import PlayerStatsSerializer
 
 
@@ -10,7 +9,6 @@ def scraping_players_stats_with_teams(request) :
     stats = PlayerStatsService.scrap_players_stats_with_teams()
     return Response(stats)
 
-=======
 from .serializers import PlayerStatsSerializer, GoalkeeperStatsSerializer
 from rest_framework import status
 
@@ -55,4 +53,3 @@ def get_all_goalkeeper_stats(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": "an error happened"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
->>>>>>> origin/master

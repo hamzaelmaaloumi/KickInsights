@@ -104,7 +104,7 @@ const Players = () => {
         : players;
 
     updatedPlayers = updatedPlayers.filter((player) =>
-      player.name.toLowerCase().includes(search.toLowerCase())
+      player.name?.toLowerCase().includes(search.toLowerCase())
     );
 
     setFilteredPlayers(updatedPlayers);

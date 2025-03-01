@@ -39,7 +39,7 @@ def deleteTeam(name) :
 @staticmethod
 def scraping_teams() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches'
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
     
     options = Options()
@@ -142,8 +142,7 @@ def scraping_teams() :
         
         for team in teams :
             try :
-                if TeamDao.get_team_by_name(team['name']) is None :
-                    TeamDao.add_team(team)
+                TeamDao.add_team(team)
             except :
                 print("problem while inserting the team")
 

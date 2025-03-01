@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'kickinsights',  # this is the name
         'USER': 'postgres',
-        'PASSWORD': 'hamza',
+        'PASSWORD': '1234',
         'HOST': 'localhost',  # Replace with your PostgreSQL server's address if necessary
         'PORT': '',          # Leave empty to use the default PostgreSQL port (usually 5432)
     }

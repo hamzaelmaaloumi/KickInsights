@@ -8,11 +8,8 @@ from myapp.entities.PlayerStatsModel import PlayerStats
 from myapp.entities.TeamStatsPartsModels import Sommaire, Tirs, Attaque, Passes, Duel, Defense, GardienDeBut
 from myapp.entities.PlaysModel import Plays
 from myapp.entities.UserModel import User, ProfileManager
-<<<<<<< HEAD
 from myapp.entities.PlayerStatsModel import PlayerStatsWithTeam
-=======
 from myapp.entities.PlayerStatsModel import PlayerStats, GoalkeeperStats
->>>>>>> origin/master
 
 class PlayerSerializer (serializers.ModelSerializer) :
     class Meta :
