@@ -39,7 +39,7 @@ def deleteTeam(name) :
 @staticmethod
 def scraping_teams() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches'
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
     
     options = Options()
@@ -131,7 +131,8 @@ def scraping_teams() :
                     "entraineur": entraineur,
                     "classement": classement,
                     "joueurs_total": joueurs_total,
-                    "moyenne_age": moyenne_age.split()[0]
+                    "moyenne_age": moyenne_age.split()[0],
+                    "type" : "national"
                 })
             except Exception as e :
                 print(f"Error with team href: {e}")
@@ -141,8 +142,7 @@ def scraping_teams() :
         
         for team in teams :
             try :
-                if TeamDao.get_team_by_name(team['name']) is None :
-                    TeamDao.add_team(team)
+                TeamDao.add_team(team)
             except :
                 print("problem while inserting the team")
 
@@ -180,6 +180,7 @@ def scraping_players_teams() :
         team = {
             "image": teamImage.get_attribute("src"),
             "name": teamName.text,
+            "type" : "club"
         }
         teams.append(team)
         teamID = TeamDao.add_team(team)

@@ -1,8 +1,10 @@
-from myapp.serializers import UserSerializer
+from myapp.serializers.UserSerializer import UserSerializer
 from myapp.dal import UserDao
 from rest_framework.response import Response
 from rest_framework import status
-
+import jwt, datetime
+from rest_framework.exceptions import AuthenticationFailed
+from myapp.entities.UserModel import User
 
 @staticmethod
 def getAllUsers() : 
@@ -56,16 +58,60 @@ def loginUser(request, data):
         if user.is_manager and hasattr(user, 'manager_profile'):
             if user.manager_profile.profile_picture:
                 profile_picture = request.build_absolute_uri(user.manager_profile.profile_picture.url)
-            #build abasolute path for the url of the image
+            
+        expiration_time = datetime.datetime.utcnow() + datetime.timedelta(minutes=120)            
+            
+        payload = {
+            'id': user.id,
+            'exp': expiration_time,
+            'iat': datetime.datetime.utcnow()
+        }
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
 
-        return Response(
+        response = Response(
             {
-            'authenticated': True, 
-            'user_id': user.id,
-            'username': user.username,
-            'is_manager': user.is_manager,
-            'profile_picture': profile_picture,
+                'authenticated': True, 
+                'user_id': user.id,
+                'username': user.username,
+                'is_manager': user.is_manager,
+                'profile_picture': profile_picture,
+                'jwt': token
             },
-            status=status.HTTP_200_OK)
+            status=status.HTTP_200_OK
+        )
+        
+        response.set_cookie(
+            key='jwt', 
+            value=token, 
+            httponly=True, 
+            secure=True,  # Set to True for HTTPS
+            samesite='None',  # Required for cross-site cookies
+            max_age=7200  # Optional: Set cookie expiration time in seconds
+        )
+        return response
     else:
         return Response({'authenticated': False}, status=status.HTTP_401_UNAUTHORIZED)
+      
+def user(request) :
+    token = request.COOKIES.get('jwt')
+    
+    if not token :
+        raise AuthenticationFailed('Unauthenticated')
+    
+    try :
+        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+    except jwt.ExpiredSignatureError :
+        raise AuthenticationFailed('Unauthenticated')
+    
+    user = User.objects.filter(id=payload['id']).first()
+    serializer = UserSerializer(user)
+    
+    return serializer.data
+
+def logout(request) :
+    response = Response()
+    response.delete_cookie('jwt')
+    response.data = {
+        'message':'sucess'
+    }
+    return response

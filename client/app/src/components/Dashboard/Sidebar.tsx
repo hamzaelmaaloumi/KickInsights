@@ -1,11 +1,14 @@
 import flag from "../../assets/icon.png";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
 import ManageAccountsRoundedIcon from "@mui/icons-material/ManageAccountsRounded";
 import PeopleAltRoundedIcon from "@mui/icons-material/PeopleAltRounded";
 import SportsSoccerRoundedIcon from "@mui/icons-material/SportsSoccerRounded";
 import DataUsageRoundedIcon from "@mui/icons-material/DataUsageRounded";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
+import SubjectRoundedIcon from "@mui/icons-material/SubjectRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -33,7 +36,7 @@ const Sidebar = () => {
                 type="button"
                 className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
               >
-                {/* <BsLayoutSidebar className="h-4 w-4" /> */}
+                <SubjectRoundedIcon />
               </button>
               <a href="https://flowbite.com" className="flex ms-2 md:me-24">
                 <img src={flag} className="h-8 me-3" alt="KickInsights Logo" />
@@ -131,17 +134,17 @@ const Sidebar = () => {
         <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
           <ul className="space-y-2 font-manrope font-medium">
             <li>
-              <a
-                href="#"
+              <Link
+                to="admin/dashboard"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <DashboardRoundedIcon />
                 <span className="ms-3">Dashboard</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                to="admin/managers"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <ManageAccountsRoundedIcon />
@@ -149,36 +152,34 @@ const Sidebar = () => {
                 <span className="inline-flex items-center justify-center px-2 ms-3 text-sm font-manrope font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-300">
                   Pro
                 </span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                to="admin/leagues"
+                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <EmojiEventsRoundedIcon />
+                <span className="flex-1 ms-3 whitespace-nowrap">Leagues</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="admin/teams"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <SportsSoccerRoundedIcon />
                 <span className="flex-1 ms-3 whitespace-nowrap">Teams</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a
-                href="#"
+              <Link
+                to="admin/players"
                 className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               >
                 <PeopleAltRoundedIcon />
                 <span className="flex-1 ms-3 whitespace-nowrap">Players</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <DataUsageRoundedIcon />
-                <span className="flex-1 ms-3 whitespace-nowrap">
-                  Statistics
-                </span>
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

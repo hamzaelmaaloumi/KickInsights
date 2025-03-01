@@ -20,45 +20,52 @@ const Pagination = ({
         aria-label="Table navigation"
       >
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing
+          Showing&nbsp;
           <span className="font-semibold text-gray-900 dark:text-white">
-            1-10
+            {(currentPage - 1) * postPerPages + 1} -
+            {Math.min(currentPage * postPerPages, totalPosts)}
           </span>
-          of
+          &nbsp;of
           <span className="font-semibold text-gray-900 dark:text-white">
-            1000
+            &nbsp;{totalPosts}
           </span>
         </span>
         <ul className="inline-flex items-stretch -space-x-px">
           <li>
-            <a
-              href="#"
+            <button
+              onClick={() => {
+                if (currentPage > 1) {
+                  setCurrentPage(currentPage - 1);
+                }
+              }}
               className="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <span className="sr-only">Previous</span>
               <ChevronLeftRoundedIcon />
-            </a>
+            </button>
           </li>
           {pages.map((page, index) => (
             <li key={index}>
               <button
                 onClick={() => setCurrentPage(page)}
-                className={`flex items-center justify-center h-full text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${
-                  page == currentPage ? "active" : ""
-                }`}
+                className="flex items-center justify-center h-full text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
               >
                 {page}
               </button>
             </li>
           ))}
           <li>
-            <a
-              href="#"
+            <button
+              onClick={() => {
+                if (currentPage < pages.length) {
+                  setCurrentPage(currentPage + 1);
+                }
+              }}
               className="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
             >
               <span className="sr-only">Next</span>
               <ChevronRightRoundedIcon />
-            </a>
+            </button>
           </li>
         </ul>
       </nav>

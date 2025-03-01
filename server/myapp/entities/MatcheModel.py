@@ -17,6 +17,8 @@ class Matche(models.Model) :
     scoreB = models.IntegerField(null=False)
     state = models.CharField(
         max_length=1,
-        choices=MatcheState.choices
+        choices=MatcheState.choices,
+        null=True,
+        blank=True
     )
     

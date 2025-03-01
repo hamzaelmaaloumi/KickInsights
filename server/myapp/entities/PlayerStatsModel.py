@@ -30,6 +30,38 @@ class PlayerStats(models.Model):
     def __str__(self):
         return f"Player: {self.player} - Match: {self.match}"
 
+class PlayerStatsWithTeam(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    match = models.ForeignKey(Matche, on_delete=models.CASCADE)
+    note = models.DecimalField(max_digits=5,decimal_places=2,blank=True, null=True)
+    minutes_joues = models.CharField(blank=True, null=True)
+    but = models.CharField(blank=True, null=True)
+    but_attendus = models.CharField(blank=True, null=True)
+    passes_decisive = models.CharField(blank=True, null=True)
+    touches = models.CharField(blank=True, null=True)
+    passes_precises = models.CharField(blank=True, null=True)
+    passes_cles = models.CharField(blank=True, null=True)
+    centres = models.CharField(blank=True, null=True)
+    passes_en_profondeur = models.CharField(blank=True, null=True)
+    tirs_cadres = models.CharField(blank=True, null=True)
+    tirs_non_cadres = models.CharField(blank=True, null=True)
+    tirs_bloques = models.CharField(blank=True, null=True)
+    tentatives_de_dribble = models.CharField(blank=True, null=True)
+    duels_au_sol = models.CharField(blank=True, null=True)
+    duels_aeriennes = models.CharField(blank=True, null=True)
+    perte_de_balle = models.CharField(blank=True, null=True)
+    tacles_recus = models.CharField(blank=True, null=True)
+    fautes = models.CharField(blank=True, null=True)
+    degagements = models.CharField(blank=True, null=True)
+    interceptions = models.CharField(blank=True, null=True)
+    tacles_totaux = models.CharField(blank=True, null=True)
+    dribbles_subis = models.CharField(blank=True, null=True)
+    grosses_occasions_crees = models.CharField(blank=True, null=True)
+    hors_jeux = models.CharField(blank=True, null=True)
+    sauves = models.CharField(blank=True, null=True)
+    degagements_des_poings = models.CharField(blank=True, null=True)
+    sorties = models.CharField(blank=True, null=True)
+    sorties_aeriennes = models.CharField(blank=True, null=True)
 
 
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { matchRoutes, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import httpService from "../../HttpService/http-service";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 

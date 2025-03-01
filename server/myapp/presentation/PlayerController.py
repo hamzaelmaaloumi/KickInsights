@@ -25,4 +25,7 @@ def addPlayer(request) :
         return Response(player)
     except :
         print("problem while adding player from api")
-
+        
+@api_view(['GET'])
+def get_positions(request) :
+    return Response(PlayerService.get_positions())

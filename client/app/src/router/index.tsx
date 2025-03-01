@@ -7,9 +7,13 @@ import NotFound from "../components/NotFound";
 import Layout from "../pages/Layout";
 import DashboardLayout from "../pages/Admin/DashboardLayout";
 import Players from "../pages/Admin/Players";
+import Leagues from "../pages/Admin/Leagues";
+import Teams from "../pages/Admin/Teams";
+import Dashboard from "../pages/Admin/Dashboard";
+import Managers from "../pages/Admin/Managers";
+import Squad from "../pages/Manager/Squad";
 import Match from "../pages/Match/Match";
 import Stats from "../pages/Match/Stats";
-import Squad from "../pages/squad/Squad";
 
 export const routers = createBrowserRouter([
   {
@@ -22,16 +26,17 @@ export const routers = createBrowserRouter([
       },
       {
         path: "match",
-        element: <Match/>
+        element: <Match />,
       },
       {
         path: "stats/:matchId",
-        element: <Stats />
+        element: <Stats />,
       },
       {
         path: "squad",
-        element: <Squad />
+        element: <Squad />,
       },
+      { path: "/squad", element: <Squad /> },
       {
         path: "*",
         element: <NotFound />,
@@ -46,7 +51,23 @@ export const routers = createBrowserRouter([
         element: <Players />,
       },
       {
-        path: "*",
+        path: "/admin/leagues",
+        element: <Leagues />,
+      },
+      {
+        path: "/admin/teams",
+        element: <Teams />,
+      },
+      {
+        path: "/admin/managers",
+        element: <Managers />,
+      },
+      {
+        path: "/admin/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/admin/*",
         element: <NotFound />,
       },
     ],
