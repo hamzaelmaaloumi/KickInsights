@@ -1,293 +1,312 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useEffect, useState } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import httpService from "../../HttpService/http-service";
 
-const ModernStatsDashboard = () => {
-  // Sample match stats data
-  const matchStats = {
-    id: 1,
-    possessionData: [
-      { name: 'Your Team', value: 58 },
-      { name: 'Opponent', value: 42 }
-    ],
-    shootingStats: {
-      total_tirs: 15,
-      tirs_cadres: 8,
-      frappe_sur_poteau: 1,
-      tirs_non_cadres: 4,
-      tirs_bloques: 2,
-      tirs_dans_surface: 9,
-      tirs_hors_surface: 6
-    },
-    passingStats: {
-      passes_precises: 352,
-      passes: 410,
-      touches: 580,
-      passes_vers_dernier_tiers: 45,
-      dans_le_dernier_tiers: 120,
-      longs_ballons: 32,
-      transversales: 15
-    },
-    defenseStats: {
-      tacles_gagnes: 12,
-      tacles_totaux: 18,
-      tacles: 18,
-      interceptions: 24,
-      recuperations: 58,
-      degagements: 16,
-      erreurs_menant_a_un_but: 0
-    },
-    attackStats: {
-      grandes_chances: 4,
-      grosses_occasions_realisees: 2,
-      grosses_occasions_manquees: 2,
-      touchers_surface_reparation: 18,
-      corner: 6,
-      coups_francs: 8
-    },
-    duelStats: {
-      duels: 65,
-      duels_sol: 42,
-      duels_aeriens: 23,
-      dribbles: 15,
-      pertes_balle: 25
-    },
-    disciplineStats: {
-      fautes: 10,
-      cartons_jaunes: 2
-    },
-    goalkeeperStats: {
-      arrets_du_gardien: 5,
-      sorties_aeriennes: 3,
-      coup_de_pied_de_but: 8
-    }
+interface Player {
+  player_name: string;
+  position: string;
+  age: number;
+  nationality: string;
+  image: string;
+  link: string;
+}
+
+const positionsMap = {
+  "4-3-3": [
+    { id: "gk", top: "85%", left: "50%", position: "GK" },
+    { id: "rb", top: "70%", left: "80%", position: "RB" },
+    { id: "cb1", top: "70%", left: "65%", position: "CB" },
+    { id: "cb2", top: "70%", left: "35%", position: "CB" },
+    { id: "lb", top: "70%", left: "20%", position: "LB" },
+    { id: "cm1", top: "50%", left: "65%", position: "CM" },
+    { id: "cdm", top: "50%", left: "50%", position: "CDM" },
+    { id: "cm2", top: "50%", left: "35%", position: "CM" },
+    { id: "rw", top: "30%", left: "80%", position: "RW" },
+    { id: "st", top: "30%", left: "50%", position: "ST" },
+    { id: "lw", top: "30%", left: "20%", position: "LW" },
+  ]
+};
+
+const PlayerCard: React.FC<{ 
+  player: Player, 
+  inPitch?: boolean, 
+  onReturnToList?: () => void 
+}> = ({ player, inPitch = false, onReturnToList }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'player',
+    item: { player },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
+  const positionMap: Record<string, string> = {
+    "Gardien de but": "GK",
+    "Défenseur": "CB",
+    "Ailier": "RW",
+    "Milieu de terrain": "CM",
   };
 
-  // Create data for bar charts
-  const shootingData = [
-    { name: 'Total', value: matchStats.shootingStats.total_tirs },
-    { name: 'On Target', value: matchStats.shootingStats.tirs_cadres },
-    { name: 'Off Target', value: matchStats.shootingStats.tirs_non_cadres },
-    { name: 'Blocked', value: matchStats.shootingStats.tirs_bloques }
-  ];
-
-  const passingData = [
-    { name: 'Accurate', value: matchStats.passingStats.passes_precises },
-    { name: 'Total', value: matchStats.passingStats.passes },
-  ];
-
-  const defenseData = [
-    { name: 'Tackles Won', value: matchStats.defenseStats.tacles_gagnes },
-    { name: 'Total Tackles', value: matchStats.defenseStats.tacles_totaux },
-    { name: 'Interceptions', value: matchStats.defenseStats.interceptions },
-    { name: 'Recoveries', value: matchStats.defenseStats.recuperations }
-  ];
+  const positionAbbr = positionMap[player.position] || 'Unknown';
 
   return (
-    <div className="bg-gray-900 text-gray-100 p-6 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6 text-blue-400">Match Statistics Dashboard</h1>
-      
-      {/* Possession Section */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-3 text-blue-300">Possession</h2>
-        <div className="flex items-center">
-          <div className="w-full bg-gray-700 rounded-full h-4">
-            <div
-              className="bg-blue-500 h-4 rounded-full"
-              style={{ width: `${matchStats.possessionData[0].value}%` }}
-            ></div>
-          </div>
-          <span className="ml-3 font-bold">{matchStats.possessionData[0].value}%</span>
-        </div>
-      </div>
-      
-      {/* Two-column layout for stats sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Shooting Section */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Shooting</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={shootingData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px', color: '#F3F4F6' }} 
-                />
-                <Bar dataKey="value" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Inside Box</p>
-              <p className="text-xl font-bold">{matchStats.shootingStats.tirs_dans_surface}</p>
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Outside Box</p>
-              <p className="text-xl font-bold">{matchStats.shootingStats.tirs_hors_surface}</p>
-            </div>
-          </div>
-        </div>
+    <div ref={drag} className={`${inPitch ? 'absolute transform -translate-x-1/2 -translate-y-1/2' : 'mb-4'} ${isDragging ? 'opacity-50' : 'opacity-100'} font-manrope w-28 cursor-move transition-all duration-300 ease-in-out`}>
+      <div className="relative rounded-lg overflow-hidden shadow-xl transition-all duration-300 transform hover:scale-105"
+        style={{ background: 'linear-gradient(135deg, #101010 0%, #181818 100%)', boxShadow: '0 10px 30px rgba(0, 0, 0, 0.7)' }}>
         
-        {/* Passing Section */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Passing</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={passingData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px', color: '#F3F4F6' }} 
-                />
-                <Bar dataKey="value" fill="#10B981" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Final Third</p>
-              <p className="text-xl font-bold">{matchStats.passingStats.dans_le_dernier_tiers}</p>
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Long Balls</p>
-              <p className="text-xl font-bold">{matchStats.passingStats.longs_ballons}</p>
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Crosses</p>
-              <p className="text-xl font-bold">{matchStats.passingStats.transversales}</p>
-            </div>
-          </div>
+        <div className="bg-black px-1 text-white flex justify-between items-center">
+          <span className="text-sm font-bold">{player.player_name.split(" ")[0]}</span>
         </div>
-        
-        {/* Defense Section */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Defense</h2>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={defenseData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px', color: '#F3F4F6' }} 
-                />
-                <Bar dataKey="value" fill="#F59E0B" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+
+        <div className="bg-black relative flex justify-center pt-3 pb-4">
+          <div className="h-16 w-16 rounded-full overflow-hidden border-4 border-indigo-700 shadow-xl">
+            <img src={player.image} alt={player.player_name} className="h-full w-full object-cover" />
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Clearances</p>
-              <p className="text-xl font-bold">{matchStats.defenseStats.degagements}</p>
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Errors to Goal</p>
-              <p className="text-xl font-bold">{matchStats.defenseStats.erreurs_menant_a_un_but}</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Duels Section */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Duels</h2>
-          <div className="flex justify-between mb-4">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-700 text-2xl font-bold">
-                {matchStats.duelStats.duels}
-              </div>
-              <p className="mt-2 text-sm text-gray-400">Total Duels</p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-900 text-2xl font-bold">
-                {matchStats.duelStats.duels_sol}
-              </div>
-              <p className="mt-2 text-sm text-gray-400">Ground Duels</p>
-            </div>
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-900 text-2xl font-bold">
-                {matchStats.duelStats.duels_aeriens}
-              </div>
-              <p className="mt-2 text-sm text-gray-400">Aerial Duels</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Dribbles</p>
-              <p className="text-xl font-bold">{matchStats.duelStats.dribbles}</p>
-            </div>
-            <div className="bg-gray-700 p-2 rounded">
-              <p className="text-xs text-gray-400">Ball Losses</p>
-              <p className="text-xl font-bold">{matchStats.duelStats.pertes_balle}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Bottom row for additional stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        {/* Attacking Stats */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Attacking</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-700 p-3 rounded flex flex-col items-center">
-              <p className="text-sm text-gray-400">Big Chances</p>
-              <p className="text-2xl font-bold">{matchStats.attackStats.grandes_chances}</p>
-            </div>
-            <div className="bg-gray-700 p-3 rounded flex flex-col items-center">
-              <p className="text-sm text-gray-400">Corners</p>
-              <p className="text-2xl font-bold">{matchStats.attackStats.corner}</p>
-            </div>
-            <div className="bg-gray-700 p-3 rounded flex flex-col items-center">
-              <p className="text-sm text-gray-400">Box Touches</p>
-              <p className="text-2xl font-bold">{matchStats.attackStats.touchers_surface_reparation}</p>
-            </div>
-            <div className="bg-gray-700 p-3 rounded flex flex-col items-center">
-              <p className="text-sm text-gray-400">Free Kicks</p>
-              <p className="text-2xl font-bold">{matchStats.attackStats.coups_francs}</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Discipline Stats */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Discipline</h2>
-          <div className="flex justify-around">
-            <div className="text-center">
-              <div className="w-16 h-24 bg-gray-700 flex items-center justify-center rounded mb-2">
-                <span className="text-2xl font-bold">{matchStats.disciplineStats.fautes}</span>
-              </div>
-              <p className="text-sm text-gray-400">Fouls</p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-24 bg-yellow-500 flex items-center justify-center rounded mb-2">
-                <span className="text-2xl font-bold text-gray-900">{matchStats.disciplineStats.cartons_jaunes}</span>
-              </div>
-              <p className="text-sm text-gray-400">Yellow Cards</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Goalkeeper Stats */}
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-3 text-blue-300">Goalkeeper</h2>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="bg-gray-700 p-3 rounded flex justify-between items-center">
-              <p className="text-sm text-gray-400">Saves</p>
-              <p className="text-2xl font-bold">{matchStats.goalkeeperStats.arrets_du_gardien}</p>
-            </div>
-            <div className="bg-gray-700 p-3 rounded flex justify-between items-center">
-              <p className="text-sm text-gray-400">Aerial Claims</p>
-              <p className="text-2xl font-bold">{matchStats.goalkeeperStats.sorties_aeriennes}</p>
-            </div>
-            <div className="bg-gray-700 p-3 rounded flex justify-between items-center">
-              <p className="text-sm text-gray-400">Goal Kicks</p>
-              <p className="text-2xl font-bold">{matchStats.goalkeeperStats.coup_de_pied_de_but}</p>
-            </div>
-          </div>
+          <span className="absolute bottom-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full p-1 text-[10px] font-manrope">{positionAbbr}</span>
+          <span className="absolute top-0 right-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-sm p-1 text-[12px] font-manrope">9.8</span>
+          
+          {inPitch && onReturnToList && (
+            <button 
+              onClick={onReturnToList}
+              className="absolute top-0 left-0 bg-red-600 rounded-br-sm p-1 text-[10px] w-5 h-5 flex items-center justify-center"
+              title="Return to available players"
+            >
+              X
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default ModernStatsDashboard;
+const PositionDropArea: React.FC<{ 
+  id: string, 
+  top: string, 
+  left: string, 
+  position: string, 
+  onDrop: (player: Player, positionId: string) => void, 
+  onRemovePlayer: (positionId: string) => void,
+  player?: Player 
+}> = ({ id, top, left, position, onDrop, onRemovePlayer, player }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'player',
+    drop: (item: { player: Player }) => {
+      onDrop(item.player, id);
+      return undefined;
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  const handleReturnToList = () => {
+    if (player) {
+      onRemovePlayer(id);
+    }
+  };
+
+  return (
+    <div ref={drop} className={`absolute ${isOver ? 'scale-110' : ''} transition-transform duration-200`} style={{ top, left }}>
+      {player ? (
+        <PlayerCard 
+          player={player} 
+          inPitch={true} 
+          onReturnToList={handleReturnToList}
+        />
+      ) : (
+        <div className="h-28 w-28 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center bg-gray-900 bg-opacity-40 transform -translate-x-1/2 -translate-y-1/2">
+          <span className="text-gray-400 text-xs">{position}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const DropToReturnArea: React.FC<{ onReturnPlayer: (player: Player) => void }> = ({ onReturnPlayer }) => {
+  const [{ isOver }, drop] = useDrop(() => ({
+    accept: 'player',
+    drop: (item: { player: Player }) => {
+      onReturnPlayer(item.player);
+      return undefined;
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  }));
+
+  return (
+    <div 
+      ref={drop} 
+      className={`mt-4 p-4 border-2 border-dashed ${isOver ? 'border-green-500 bg-green-900 bg-opacity-20' : 'border-gray-600'} rounded-lg text-center transition-all duration-200`}
+    >
+      <p className="text-gray-400">Drag a player here to return them to the available list</p>
+    </div>
+  );
+};
+
+export default function Squad() {
+  const playerService = new httpService("Player");
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [formation] = useState("4-3-3");
+  const [lineup, setLineup] = useState<Record<string, Player>>({});
+  const positions = positionsMap[formation as keyof typeof positionsMap];
+
+  useEffect(() => {
+    let outController: AbortController;
+    
+    const fetchPlayers = async () => {
+      try {
+        const response = playerService.getAll();
+        outController = response.controller;
+        const playersResponse = await response.request;
+        setPlayers([...playersResponse.data]);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      }
+    };
+
+    fetchPlayers();
+
+    return () => {
+      if (outController) {
+        outController.abort();
+      }
+    };
+  }, []);
+
+  const handleDrop = (player: Player, positionId: string) => {
+    setLineup(prev => {
+      // Create a completely new lineup object to avoid reference issues
+      const newLineup = { ...prev };
+      
+      // Find the current position of the player being dropped (if they're on the field)
+      let currentPositionOfDroppedPlayer: string | null = null;
+      
+      Object.entries(newLineup).forEach(([pos, existingPlayer]) => {
+        if (existingPlayer && existingPlayer.player_name === player.player_name) {
+          currentPositionOfDroppedPlayer = pos;
+        }
+      });
+      
+      // Get the player in the target position (if any)
+      const playerInTargetPosition = newLineup[positionId];
+      
+      // Case 1: The player is already on the field, and we're moving to an occupied position
+      if (currentPositionOfDroppedPlayer && playerInTargetPosition) {
+        // Simple swap - A goes to B's position, B goes to A's position
+        newLineup[positionId] = player;
+        newLineup[currentPositionOfDroppedPlayer] = playerInTargetPosition;
+      }
+      // Case 2: The player is already on the field, but we're moving to an empty position
+      else if (currentPositionOfDroppedPlayer) {
+        // Remove from current position
+        delete newLineup[currentPositionOfDroppedPlayer];
+        // Add to new position
+        newLineup[positionId] = player;
+      }
+      // Case 3: The player is from the bench, and we're adding to an occupied position
+      else if (playerInTargetPosition) {
+        // Simply replace the player in the position
+        newLineup[positionId] = player;
+      }
+      // Case 4: The player is from the bench, and we're adding to an empty position
+      else {
+        // Simply add to the position
+        newLineup[positionId] = player;
+      }
+      
+      return newLineup;
+    });
+  };
+
+  const handleRemovePlayer = (positionId: string) => {
+    setLineup(prev => {
+      const newLineup = { ...prev };
+      delete newLineup[positionId];
+      return newLineup;
+    });
+  };
+
+  const handleReturnPlayer = (player: Player) => {
+    // Find the position where this player is and remove them
+    setLineup(prev => {
+      const newLineup = { ...prev };
+      Object.keys(newLineup).forEach(posId => {
+        if (newLineup[posId]?.player_name === player.player_name) {
+          delete newLineup[posId];
+        }
+      });
+      return newLineup;
+    });
+  };
+
+  const getAvailablePlayers = () => {
+    const usedPlayers = Object.values(lineup);
+    return players.filter(player => 
+      !usedPlayers.some(used => used.player_name === player.player_name)
+    );
+  };
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div className="min-h-screen bg-black text-white p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8 text-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            Ultimate Team Builder
+          </h1>
+          
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-2/3">
+              <div className="relative w-full h-[600px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg overflow-hidden shadow-2xl border border-gray-700">
+                <div className="absolute inset-0">
+                  <div className="absolute inset-2 border-2 border-gray-700 rounded-md"></div>
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gray-700 transform -translate-x-1/2"></div>
+                  <div className="absolute top-1/2 left-0 right-0 h-px bg-gray-700 transform -translate-y-1/2"></div>
+                  <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-gray-700 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+                  <div className="absolute top-0 left-1/2 w-64 h-24 border-b-2 border-l-2 border-r-2 border-gray-700 transform -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-64 h-24 border-t-2 border-l-2 border-r-2 border-gray-700 transform -translate-x-1/2"></div>
+                  <div className="absolute top-0 left-1/2 w-32 h-10 border-b-2 border-l-2 border-r-2 border-gray-700 transform -translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-1/2 w-32 h-10 border-t-2 border-l-2 border-r-2 border-gray-700 transform -translate-x-1/2"></div>
+                </div>
+                
+                {positions.map(pos => (
+                  <PositionDropArea 
+                    key={pos.id}
+                    id={pos.id}
+                    top={pos.top}
+                    left={pos.left}
+                    position={pos.position}
+                    onDrop={handleDrop}
+                    onRemovePlayer={handleRemovePlayer}
+                    player={lineup[pos.id]}
+                  />
+                ))}
+              </div>
+            </div>
+            
+            <div className="lg:w-1/3 bg-gray-800 rounded-lg shadow-2xl border border-gray-700 overflow-hidden">
+              <div className="bg-gradient-to-r from-gray-800 to-gray-900 px-4 py-3 border-b border-gray-700">
+                <h2 className="text-xl font-bold flex items-center">
+                  <span className="w-1 h-6 bg-indigo-500 mr-2"></span>
+                  Available Players
+                </h2>
+              </div>
+              
+              <div className="p-4">
+                <DropToReturnArea onReturnPlayer={handleReturnPlayer} />
+                
+                <div className="grid grid-cols-2 gap-4 max-h-[450px] overflow-y-auto pr-2 mt-4">
+                  {getAvailablePlayers().map((player) => (
+                    <PlayerCard key={player.player_name} player={player} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </DndProvider>
+  );
+}

@@ -3,7 +3,7 @@ from .presentation import TeamStatsPartsController, PlayerController, PlayerStat
 
 urlpatterns = [
     path('scrapPlayers/',PlayerController.scraping_players),
-    path('getPlayers/',PlayerController.getAllplayers),
+    path('Player/',PlayerController.getAllplayers),
     path('getPlayersTeams/',PlayerController.get_all_players_with_team),
     
     path('scrapTeams/',TeamController.scraping_teams),
