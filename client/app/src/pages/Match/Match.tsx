@@ -18,6 +18,18 @@ interface match {
   leagueName: string;
   leagueImg: string;
 }
+interface opponent {
+  id: number,
+  name: string,
+  image: string,
+  fixture_date: string,
+  fixture_time: string,
+  summary: number,
+  attacking: number,
+  passes: number,
+  defending: number,
+  other: number
+}
 
 export default function Match() {
   const matchService = new httpService("Match");
@@ -52,7 +64,6 @@ export default function Match() {
           })
         );
 
-        console.log(res.data);
 
         setMatches(matchData);
         setLoading(false);
@@ -67,11 +78,61 @@ export default function Match() {
     return () => outController.abort();
   }, []);
 
+
+
+
+
+  const [opponent, setOpponent] = useState<opponent[]>([])
+
+
+
+
+
+
+
+
+
+  useEffect(()=> {
+    const opponentService = new httpService("Opponent");
+    let AbortController: AbortController;
+
+    const fetchOpponents = async () => {
+      try{
+        const {request, controller} = opponentService.getAll()
+        AbortController = controller
+        const res = await request
+        setOpponent(res.data)
+        console.log(`here is is it ${res.data}`)
+      }
+      catch(e){
+        console.log(`error ${e}`) 
+      }
+    }
+
+    fetchOpponents()
+    console.log(opponent);
+    
+
+  }, [])
+
+
+
+
+
+
   return (
-    <div className=" bg-black py-11 flex flex-col items-center">
-      <h2 className="font-manrope text-5xl text-white font-extrabold text-center">
+    <div className="bg-black py-11 flex flex-col items-center">
+      <div className="flex justify-between items-center gap-2">
+      <h2 className="font-manrope text-md bg-green-400/40 border-2 border-green-400 py-2 px-4 rounded-full text-green-300 font-extrabold text-center">
         Recent Matches
       </h2>
+      <h2 className="font-manrope text-md bg-green-400/40 border-2 border-green-400 py-2 px-4 rounded-full text-green-300 font-extrabold text-center">
+        next Matches
+      </h2>
+      </div>
+
+
+
       {loading && (
         <div
           data-aos="fade-down"
@@ -99,8 +160,31 @@ export default function Match() {
         </div>
       )}
 
+      {!loading && matches.length === 0 && (
+        <div 
+          data-aos="fade-up"
+          className="m-16 p-11 bg-red-950 opacity-5 border-2 shadow-md shadow-red-600 border-red-800 rounded-3xl text-center"
+        >
+          <svg
+            className="w-16 h-16 mx-auto text-red-600  mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+            />
+          </svg>
+          <p className="text-red-600 text-xl font-bold font-manrope mb-2">No matches found</p>
+          <p className="text-white font-manrope">Check back later for new matches</p>
+        </div>
+      )}
+
       <div className="flex flex-wrap justify-center">
-        {matches.slice(0, matchCount).map((m) => {
+        { matches.slice(0, matchCount).map((m) => {
           return (
             <div
               data-aos="fade-up"
@@ -171,7 +255,7 @@ export default function Match() {
         })}
       </div>
 
-      {matchCount !== matches.length && loading === false && (
+      {matchCount !== matches.length && matches.length > 0 && loading === false && (
         <div
           onClick={() => setMatchCount(matchCount + 3)}
           className="cursor-pointer w-fit px-8 py-3 bg-gray-800 text-gray-300 font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300 hover:text-white hover:shadow-lg border border-gray-700 hover:border-transparent"

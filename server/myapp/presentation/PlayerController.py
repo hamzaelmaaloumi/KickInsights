@@ -5,8 +5,11 @@ from .serializers import PlayerSerializer
 
 @api_view(['GET'])
 def scraping_players(request) :
-    players = PlayerService.scraping_players()
-    return Response(players)
+    try:
+        players = PlayerService.scraping_players()
+        return Response(players)
+    except Exception as e:
+        return Response({'error':f"{e}"})
 
 @api_view(['GET'])
 def getAllplayers(request) :

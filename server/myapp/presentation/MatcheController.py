@@ -4,6 +4,7 @@ from myapp.business import MatcheService
 from .serializers import MatcheSerializer
 from rest_framework import status
 
+
 @api_view(['GET'])
 def scraping_matches(request) :
     matches = MatcheService.scrapMatches()

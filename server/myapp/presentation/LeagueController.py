@@ -5,10 +5,13 @@ from .serializers import LeagueSerializer
 
 @api_view(['GET'])
 def scraping_leagues(request) :
-    leagues1 = LeagueService.scraping_leagues()
-    leagues2 = LeagueService.scrap_players_leagues()
-    leagues = leagues1 + leagues2
-    return Response(leagues)
+    try:
+        leagues1 = LeagueService.scraping_leagues()
+        leagues2 = LeagueService.scrap_players_leagues()
+        leagues = leagues1 + leagues2
+        return Response(leagues)
+    except Exception as e:
+        return Response({'error':f"{e}"})
 
 @api_view(['GET'])
 def getAllLeagues(request) :

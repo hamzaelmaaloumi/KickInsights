@@ -1,4 +1,4 @@
-from myapp.serializers.UserSerializer import UserSerializer
+from myapp.serializers.UserSerializer import UserSerializer, ProfileManagerSerializer
 from myapp.dal import UserDao
 from rest_framework.response import Response
 from rest_framework import status
@@ -9,7 +9,7 @@ from myapp.entities.UserModel import User
 @staticmethod
 def getAllUsers() : 
     users = UserDao.getAllUsers()
-    serializer = UserSerializer.UserSerializer(users, many=True)
+    serializer = UserSerializer(users, many=True)
     return serializer.data
 
 
@@ -20,7 +20,7 @@ def addUser(data):
         return Response({'error': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
     
     is_manager = data.get('is_manager', False)
-    user_serializer = UserSerializer.UserSerializer(data=data)
+    user_serializer = UserSerializer(data=data)
     if user_serializer.is_valid():
         validated_user_data = user_serializer.validated_data #extract validated data
 
@@ -35,7 +35,7 @@ def addUser(data):
                 'profile_picture': data.get('profile_picture'),
             }
             
-            manager_serializer = UserSerializer.ProfileManagerSerializer(data=manager_data)
+            manager_serializer = ProfileManagerSerializer(data=manager_data)
             if manager_serializer.is_valid():
                 validated_manager_data = manager_serializer.validated_data
 

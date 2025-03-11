@@ -16,6 +16,16 @@ export default {
         manrope: ["Manrope", "sans-serif"],
         robotoMono: ["Roboto Mono", "monospace"],
       },
+      animation: {
+        slideIn: "slideIn 0.3s ease-out forwards",
+        bounceSlow: "bounce 2s infinite"
+      },
+      keyframes: {
+        slideIn: {
+          "0%": { opacity: "0", transform: "scale(0.9) translateY(-20px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" }
+        }
+      }
     },
   },
   plugins: [require("@tailwindcss/forms")],

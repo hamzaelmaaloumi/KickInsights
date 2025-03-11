@@ -14,6 +14,8 @@ import Managers from "../pages/Admin/Managers";
 import Squad from "../pages/Manager/Squad";
 import Match from "../pages/Match/Match";
 import Stats from "../pages/Match/Stats";
+import Scraper from "../pages/Admin/Scraper";
+import Progress from "../pages/Admin/Progress";
 
 export const routers = createBrowserRouter([
   {
@@ -65,6 +67,12 @@ export const routers = createBrowserRouter([
       {
         path: "/admin/dashboard",
         element: <Dashboard />,
+      },{
+        path: "/admin/scraper",
+        element: <Scraper />,
+      },{
+        path: "/admin/progress",
+        element: <Progress />,
       },
       {
         path: "/admin/*",

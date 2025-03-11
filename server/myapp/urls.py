@@ -2,9 +2,10 @@ from django.urls import path
 
 from myapp.presentation import PlayerStatsController
 from .presentation import PlayerController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController
-from .presentation import TeamStatsPartsController, PlayerController, PlayerStatsController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController
+from .presentation import TeamStatsPartsController, PlayerController, PlayerStatsController,TeamController,LeagueController
+from .presentation import MatcheController, TeamStatsController, UserController, OpponentController
 
-urlpatterns = [
+urlpatterns = [  
     path('scrapPlayers/', PlayerController.scraping_players),
     path('Player/',PlayerController.getAllplayers),
     path('getPositions/', PlayerController.get_positions),
@@ -30,6 +31,9 @@ urlpatterns = [
     path('scrapMatches/', MatcheController.scraping_matches),
     path('Match/', MatcheController.get_all_Matches),
     path('Match/<int:match_id>', MatcheController.getMatchById),
+
+    path('scrapOpponents/', OpponentController.scraping_opponents),
+    path('Opponent/', OpponentController.get_all_opponents),
 
     path('TeamStats/<int:match_id>', TeamStatsController.getTeamStatsByMatchId),
     path('Summary/<int:summary_id>', TeamStatsPartsController.getSummaryById),

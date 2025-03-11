@@ -39,7 +39,7 @@ def deleteTeam(name) :
 @staticmethod
 def scraping_teams() :
     website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778#tab:matches'
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
     
     options = Options()
@@ -154,7 +154,7 @@ def scraping_teams() :
 
 @staticmethod
 def scraping_players_teams() :
-    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
+    path = "C:\\chromedriver-win64\\chromedriver.exe"
     service = Service(path)
     
     options = Options()

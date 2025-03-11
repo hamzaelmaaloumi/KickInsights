@@ -38,7 +38,7 @@ export default function SignUp() {
   const onSubmit = (data: formData) => {
     const new_data = { ...data, is_manager: false };
     axios
-      .post("http://127.0.0.1:8000/myapp/user/create", new_data)
+      .post("http://127.0.0.1:8000/myapp/user/create/", new_data)
       .then((res) => {
         console.log("success: " + res.data);
         navigate("/login");
@@ -58,6 +58,7 @@ export default function SignUp() {
           setErrorMsg("Something went wrong. Please try again later.");
         }
         setTimeout(() => setError(false), 7000);
+        console.log(`here is the erro r ${err.message}`)
       });
   };
 
