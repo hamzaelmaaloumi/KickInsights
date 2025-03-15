@@ -1,12 +1,11 @@
 from django.urls import path
-
 from myapp.presentation import PlayerStatsController
 from .presentation import PlayerController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController
-from .presentation import TeamStatsPartsController, PlayerController, PlayerStatsController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController
+from .presentation import TeamStatsPartsController, PlayerController, PlayerStatsController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController, ActivityController
 
 urlpatterns = [
     path('scrapPlayers/', PlayerController.scraping_players),
-    path('getPlayers/', PlayerController.getAllplayers),
+    path('Player/', PlayerController.getAllplayers),
     path('getPositions/', PlayerController.get_positions),
     path('getPlayersTeams/', PlayerController.get_all_players_with_team),
     
@@ -42,8 +41,18 @@ urlpatterns = [
 
     path('scrapTeamStats/', TeamStatsController.scraping_team_Stats),
     path('user/', UserController.getAllUsers),
+    path('user/delete', UserController.deleteUser),
     path('user/create/', UserController.addUser),
+    path('user/update/', UserController.updateUser),
     path('user/login/', UserController.loginUser),
     path('getPlayerTeamStats/', PlayerStatsController.scraping_players_stats_with_teams),
-    path('user/getUser/', UserController.user)
+    path('user/getUser/', UserController.user),
+    path('getManagers/', UserController.getManagers),
+    path('getActivities/', ActivityController.get_activities),
+    
+    path('getPlayersNumber/',PlayerController.get_number_of_players),
+    path('getTeamsNumber/',TeamController.get_number_of_teams),
+    path('getLeaguesNumber/',LeagueController.get_number_of_leagues),
+    path('getManagersNumber/',UserController.get_number_of_managers),
+    path('getUsersNumber/',UserController.get_number_of_users)
 ]

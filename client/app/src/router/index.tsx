@@ -11,9 +11,12 @@ import Leagues from "../pages/Admin/Leagues";
 import Teams from "../pages/Admin/Teams";
 import Dashboard from "../pages/Admin/Dashboard";
 import Managers from "../pages/Admin/Managers";
-import Squad from "../pages/Manager/Squad";
+import Squad from "../pages/squad/Squad";
 import Match from "../pages/Match/Match";
 import Stats from "../pages/Match/Stats";
+import AddManager from "../pages/Admin/AddManager";
+import UpdateManager from "../pages/Admin/UpdateManager";
+import PlayerCard from "../pages/squad/PlayerCard";
 
 export const routers = createBrowserRouter([
   {
@@ -36,7 +39,10 @@ export const routers = createBrowserRouter([
         path: "squad",
         element: <Squad />,
       },
-      { path: "/squad", element: <Squad /> },
+      {
+        path: "lineup",
+        element: <PlayerCard />,
+      },
       {
         path: "*",
         element: <NotFound />,
@@ -65,6 +71,14 @@ export const routers = createBrowserRouter([
       {
         path: "/admin/dashboard",
         element: <Dashboard />,
+      },
+      {
+        path: "/admin/add-manager",
+        element: <AddManager />,
+      },
+      {
+        path: "/admin/update-manager",
+        element: <UpdateManager />,
       },
       {
         path: "/admin/*",

@@ -53,8 +53,7 @@ def get_all_goalkeeper_stats():
 @staticmethod
 def scrap_players_stats():
     PlayerStatsDao.clear_players()
-    website = 'https://www.sofascore.com/fr/equipe/football/morocco/4778'
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = "E:/chromedriver-win64/chromedriver-win64/chromedriver.exe"
     service = Service(path)
 
     options = Options()
@@ -943,7 +942,7 @@ def scrap_players_stats_with_teams():
                             ).text
                             
                             listItems = WebDriverWait(driver, 10).until(
-                                EC.presence_of_all_elements_located((By.XPATH, './/div[@class="Box kWQyve" or @class="Box gEQWLR" or @class="Box egJOel"]'))
+                                EC.presence_of_all_elements_located((By.XPATH, './/div[@class="Box kWQyve" or @class="Box gEQWLR" or @class="Box egJOel" or @class="Box beDRJb" or @class="Box hzxuNM"]'))
                             )
                          
                             adversaire = listItems[-1].find_element(By.XPATH, './/img[@class="Img fTultb"]')

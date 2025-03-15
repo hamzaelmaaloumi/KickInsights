@@ -17,7 +17,12 @@ interface formData {
 function getCookie(name) {
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
+  if (parts.length === 2) {
+    const part = parts.pop();
+    if (part) {
+      return part.split(";").shift();
+    }
+  }
   return null;
 }
 
@@ -51,16 +56,27 @@ export default function Login() {
         document.cookie = `jwt=${token}; path=/; Secure; SameSite=None`;
         localStorage.setItem("token", token);
 
-        setUser({
-          id: res.data.user_id,
-          username: res.data.username,
-          picture: res.data.profile_picture,
-          isLoggedIn: true,
-          isManager: res.data.is_manager,
-          isAdmin: false,
-        });
-
-        navigate("/"); // Redirect after successful login
+        if (res.data.role === "admin") {
+          setUser({
+            id: res.data.user_id,
+            username: res.data.username,
+            picture: res.data.profile_picture,
+            isLoggedIn: true,
+            isManager: false,
+            isAdmin: true,
+          });
+          navigate("/admin/dashboard");
+        } else {
+          setUser({
+            id: res.data.user_id,
+            username: res.data.username,
+            picture: res.data.profile_picture,
+            isLoggedIn: true,
+            isManager: true,
+            isAdmin: false,
+          });
+          navigate("/");
+        }
       } else {
         setError(true);
         setTimeout(() => setError(false), 3000);

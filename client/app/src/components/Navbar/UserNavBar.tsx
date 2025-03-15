@@ -27,7 +27,7 @@ const UserNavBar = () => {
 
   return (
     <>
-      <div className="sticky top-0 z-10 px-4 py-4 flex justify-between items-center bg-black">
+      <div className="sticky top-0 z-10 px-4 py-4 flex justify-between items-center bg-[#0B1215]">
         <div className="cursor-pointer flex items-center gap-2">
           <img src={flag} alt="" className="w-8 h-8 rounded-xl" />
           <span className="hidden sm:flex font-manrope text-white font-[900]">

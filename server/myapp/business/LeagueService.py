@@ -172,3 +172,7 @@ def scrap_players_leagues():
 
 
 #scraping_leagues()
+
+@staticmethod
+def get_number_of_leagues():
+    return LeagueDao.get_number_of_leagues()

@@ -46,3 +46,7 @@ def get_players_links() :
 @staticmethod
 def get_positions() :
     return PlayerModel.Player.objects.values('position').annotate(count = Count('position'))
+
+@staticmethod
+def get_number_of_players():
+    return PlayerModel.Player.objects.count()

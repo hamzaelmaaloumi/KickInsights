@@ -17,9 +17,9 @@ def scraping_player_Stats(request) :
     try: 
         PlayerStatsService.scrap_players_stats()
         return Response({'success':'Player stats scraped successfully!'})
-    except:
+    except Exception as e:
         return Response(
-            {'error': 'a temporary error happened, please try again later, make sure your connection is stable'},
+            {'error': f'a temporary error happened, please try again later, make sure your connection is stable : {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 

@@ -34,3 +34,7 @@ def addLeague(request) :
 def scraping_players_leagues(request) :
     leagues = LeagueService.scrap_players_leagues()
     return Response(leagues)
+
+@api_view(['GET'])
+def get_number_of_leagues(request):
+    return Response(LeagueService.get_number_of_leagues())

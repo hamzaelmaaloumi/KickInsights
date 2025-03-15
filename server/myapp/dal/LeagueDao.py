@@ -36,3 +36,7 @@ def clearLeagues() :
         LeagueModel.League.objects.all().delete()
     except Exception as e :
         print("problem while deleting the Leagues")
+        
+@staticmethod
+def get_number_of_leagues():
+    return LeagueModel.League.objects.count()

@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 class User(models.Model):
     username = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    is_manager = models.BooleanField(default=False) 
+    role = models.CharField(max_length=255, default='user') 
 
     def __str__(self):
         return self.username

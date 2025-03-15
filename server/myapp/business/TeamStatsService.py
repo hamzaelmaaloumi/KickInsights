@@ -34,7 +34,7 @@ def delete_team_stats(matchID) :
     
 @staticmethod
 def scraping_team_stats(link) :
-    path = "C:\\chromedriver-win64\\chromedriver.exe"
+    path = 'E:\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe'
     service = Service(path)
 
     options = Options()

@@ -133,3 +133,8 @@ def get_positions() :
                 break
         
     return sorted_positions
+
+
+@staticmethod
+def get_number_of_players():
+    return PlayerDao.get_number_of_players()

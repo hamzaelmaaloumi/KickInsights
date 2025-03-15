@@ -62,7 +62,7 @@ const Leagues = () => {
   const currentPost = filteredLeagues.slice(firstPostindex, lastPostIndex);
 
   return (
-    <div className="h-screen bg-gray-900">
+    <div className="h-screen bg-gray-900 w-full">
       {isLoading ? (
         <div className="flex justify-center align-middle h-max">
           <IsLoading />

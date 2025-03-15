@@ -1,5 +1,5 @@
-from myapp.serializers.UserSerializer import UserSerializer
-from myapp.dal import UserDao
+from myapp.serializers import UserSerializer
+from myapp.dal import UserDao, ActivityDao
 from rest_framework.response import Response
 from rest_framework import status
 import jwt, datetime
@@ -12,21 +12,36 @@ def getAllUsers() :
     serializer = UserSerializer.UserSerializer(users, many=True)
     return serializer.data
 
+@staticmethod
+def deleteUser(user_name) :
+    user = UserDao.getUserByUsername(user_name)
+    if user :
+        UserDao.deleteUser(user)
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
+    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 @staticmethod
 def addUser(data):
+    activity = {}
     username = data.get('username')
     if UserDao.getUserByUsername(username).exists():
         return Response({'error': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
     
-    is_manager = data.get('is_manager', False)
+    role = data.get('role')
     user_serializer = UserSerializer.UserSerializer(data=data)
     if user_serializer.is_valid():
         validated_user_data = user_serializer.validated_data #extract validated data
 
         user = UserDao.addUser(validated_user_data)
+        
+        activity = {
+            "user" : user,
+            "action" : 'user_signup',
+            "description" : f"L'utilisateur {user.username} s'est inscrit."
+        }
 
-        if is_manager:
+        if role == 'manager':
             manager_data = {
                 'user': user.id,  # Pass user instance
                 'phone_number': data.get('phone_number'),
@@ -34,6 +49,15 @@ def addUser(data):
                 'nationality': data.get('nationality'),
                 'profile_picture': data.get('profile_picture'),
             }
+            
+            activity = {
+                "user" : UserDao.get_admin().pk,
+                "action" : 'manager_added',
+                "description" : f"Le gestionnaire {user.username} a été ajouté."
+            }
+            
+            obj = ActivityDao.add_activitie(activity)
+            print(obj)
             
             manager_serializer = UserSerializer.ProfileManagerSerializer(data=manager_data)
             if manager_serializer.is_valid():
@@ -47,6 +71,11 @@ def addUser(data):
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
     return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@staticmethod
+def updateUser(old_username, data) :
+    if UserDao.updateUser(old_username, data) :
+        return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
+    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 @staticmethod
 def loginUser(request, data):
@@ -55,7 +84,7 @@ def loginUser(request, data):
     user = UserDao.getUser(username, password)
     if user is not None:
         profile_picture = None
-        if user.is_manager and hasattr(user, 'manager_profile'):
+        if user.role == "manager" and hasattr(user, 'manager_profile'):
             if user.manager_profile.profile_picture:
                 profile_picture = request.build_absolute_uri(user.manager_profile.profile_picture.url)
             
@@ -73,7 +102,7 @@ def loginUser(request, data):
                 'authenticated': True, 
                 'user_id': user.id,
                 'username': user.username,
-                'is_manager': user.is_manager,
+                'role': user.role,
                 'profile_picture': profile_picture,
                 'jwt': token
             },
@@ -115,3 +144,14 @@ def logout(request) :
         'message':'sucess'
     }
     return response
+
+def getManagers() :
+    return UserDao.getAllManagers()
+
+@staticmethod
+def get_number_of_managers():
+    return UserDao.get_number_of_managers()
+
+@staticmethod
+def get_number_of_users():
+    return UserDao.get_number_of_users()

@@ -36,9 +36,9 @@ export default function SignUp() {
   }, [pass2]);
 
   const onSubmit = (data: formData) => {
-    const new_data = { ...data, is_manager: false };
+    const new_data = { ...data, role: "user" };
     axios
-      .post("http://127.0.0.1:8000/myapp/user/create", new_data)
+      .post("http://127.0.0.1:8000/myapp/user/create/", new_data)
       .then((res) => {
         console.log("success: " + res.data);
         navigate("/login");

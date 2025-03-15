@@ -6,3 +6,5 @@ __pycache__/
 
 # Recursively ignore .pyc files in all subdirectories
 **/*.pyc
+
+venv/

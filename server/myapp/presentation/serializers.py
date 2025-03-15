@@ -10,6 +10,7 @@ from myapp.entities.PlaysModel import Plays
 from myapp.entities.UserModel import User, ProfileManager
 from myapp.entities.PlayerStatsModel import PlayerStatsWithTeam
 from myapp.entities.PlayerStatsModel import PlayerStats, GoalkeeperStats
+from myapp.entities.ActivityModel import ActivityModel
 
 class PlayerSerializer (serializers.ModelSerializer) :
     class Meta :
@@ -100,4 +101,9 @@ class PlaysSerializer(serializers.ModelSerializer) :
 class PlayerStatsWithTeamSerializer(serializers.ModelSerializer) :
     class Meta :
         model = PlayerStatsWithTeam
+        fields = '__all__'
+        
+class ActivitySerializer(serializers.ModelSerializer) :
+    class Meta : 
+        model = ActivityModel
         fields = '__all__'

@@ -18,7 +18,7 @@ export default function NavBar() {
 
   return (
     <>
-      <div className="bg-gray-800">
+      <div className="bg-[#0B1215]">
         <div className="sticky top-0 z-10 px-4 py-4 bg-inherit flex justify-between items-center">
           <div className="cursor-pointer flex items-center gap-2">
             <img src={flag} alt="" className="w-8 h-8 rounded-xl" />

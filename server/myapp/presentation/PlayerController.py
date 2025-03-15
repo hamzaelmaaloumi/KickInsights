@@ -29,3 +29,7 @@ def addPlayer(request) :
 @api_view(['GET'])
 def get_positions(request) :
     return Response(PlayerService.get_positions())
+
+@api_view(['GET'])
+def get_number_of_players(request):
+    return Response(PlayerService.get_number_of_players())

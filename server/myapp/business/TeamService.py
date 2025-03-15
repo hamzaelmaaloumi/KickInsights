@@ -173,7 +173,9 @@ def scraping_players_teams() :
         driver.get(link)
         time.sleep(2)
         
-        playerName = driver.find_element(By.XPATH, '//h2[@class="Text cuNqBu"]')
+        playerName = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, '//h2[@class="Text cuNqBu"]'))
+        )
         print(playerName.text)
         teamName = driver.find_element(By.XPATH, '//div[@class="Text leMLNz"]')
         teamImage = driver.find_element(By.XPATH, '//img[@class="Img hDoOBr"]')
@@ -191,3 +193,8 @@ def scraping_players_teams() :
         
     
 #scraping_teams()
+
+
+@staticmethod
+def get_number_of_teams():
+    return TeamDao.get_number_of_teams()

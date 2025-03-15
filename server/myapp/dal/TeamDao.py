@@ -51,6 +51,8 @@ def add_team(team):
             if serializer.is_valid():
                 obj = serializer.save()
                 return obj.id
+        else :
+            return TeamModel.Team.objects.filter(name = team["name"]).first().pk
         return None
     except Exception as e:
         print(f"Problem while inserting a team: {e}")
@@ -64,3 +66,7 @@ def delete_team(team_name) :
         team.delete()
     except :
         print("problem while deleting a team")
+        
+@staticmethod
+def get_number_of_teams():
+    return TeamModel.Team.objects.count()        

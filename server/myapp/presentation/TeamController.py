@@ -40,3 +40,7 @@ def addTeam(request) :
         return Response(team)
     except : 
         print("problem while inserting the team")
+        
+@api_view(['GET'])
+def get_number_of_teams(request):
+    return Response(TeamService.get_number_of_teams())

@@ -55,14 +55,14 @@ export default function ManagerSignUp() {
     formData.append("phone_number", data.phone_number);
     formData.append("birthday", data.birthday);
     formData.append("nationality", data.nationality);
-    formData.append("is_manager", "true");
+    formData.append("role", "manager");
 
     // Add this line to properly handle file
     if (data.profile_picture[0]) {
       formData.append("profile_picture", data.profile_picture[0]);
     }
     axios
-      .post("http://127.0.0.1:8000/myapp/user/create", formData)
+      .post("http://127.0.0.1:8000/myapp/user/create/", formData)
       .then((res) => {
         console.log("success: " + res.data);
         navigate("/login");
@@ -232,13 +232,12 @@ export default function ManagerSignUp() {
               </label>
               <select
                 {...register("nationality", { required: true })}
-                name=""
-                id=""
+                defaultValue=""
                 className="placeholder:font-medium text-gray-400 outline-none font-manrope font-bold text-md bg-gray-900 my-2 w-full p-2 rounded-lg h-[42px]"
               >
                 <option value="">Select a country</option>
                 {options.map((country) => (
-                  <option key={country.value} value={country.value}>
+                  <option key={country.value} value={country.label}>
                     {country.label}
                   </option>
                 ))}
