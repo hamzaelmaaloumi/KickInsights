@@ -1,5 +1,6 @@
 from myapp.entities import OpponentModel
 from myapp.presentation.serializers import MatcheSerializer
+from rest_framework import response
 from myapp.serializers.OpponentSerializer import SummarySerializer, AttackingSerializer, PassingSerializer, DefendingSerializer, OtherSerializer, OpponentSerializer
 
 
@@ -23,6 +24,8 @@ def get_Opponent_by_date(OpponentDate) :
 
 
 
+    
+
 
 
 
@@ -43,6 +46,20 @@ def clear_summary():
     except Exception as e:
         raise e
     
+def getSummary():
+    try: 
+        summary = OpponentModel.Summary.objects.all()
+        return summary
+    except Exception as e:
+        print(f"dao says {e}")
+
+def getSummaryById(SummaryId):
+    try: 
+        Summary = OpponentModel.Summary.objects.filter(id=SummaryId).first()
+        return Summary
+    except Exception as e:
+        print(f"dao says {e}")
+        
     
 @staticmethod
 def add_attacking(attacking):
@@ -59,6 +76,20 @@ def clear_attacking():
         OpponentModel.Attacking.objects.all().delete()
     except Exception as e:
         raise e
+    
+def getAttacking():
+    try: 
+        attacking = OpponentModel.Attacking.objects.all()
+        return attacking
+    except Exception as e:
+        print(f"dao says {e}")
+
+def getAttackingById(AttackingId):
+    try: 
+        Attacking = OpponentModel.Attacking.objects.filter(id=AttackingId).first()
+        return Attacking
+    except Exception as e:
+        print(f"dao says {e}")
     
    
 
@@ -78,6 +109,20 @@ def clear_passing():
     except Exception as e:
         raise e
     
+def getPassing():
+    try: 
+        passing = OpponentModel.Passing.objects.all()
+        return passing
+    except Exception as e:
+        print(f"dao says {e}")
+
+def getPassingById(PassingId):
+    try: 
+        Passing = OpponentModel.Passing.objects.filter(id=PassingId).first()
+        return Passing
+    except Exception as e:
+        print(f"dao says {e}")
+    
    
 
 @staticmethod
@@ -96,6 +141,20 @@ def clear_defending():
     except Exception as e:
         raise e
     
+def getDefending():
+    try: 
+        Defending = OpponentModel.Defending.objects.all()
+        return Defending
+    except Exception as e:
+        print(f"dao says {e}")
+
+def getDefendingById(DefendingId):
+    try: 
+        Defending = OpponentModel.Defending.objects.filter(id=DefendingId).first()
+        return Defending
+    except Exception as e:
+        print(f"dao says {e}")
+    
    
 
 @staticmethod
@@ -113,6 +172,20 @@ def clear_other():
         OpponentModel.Other.objects.all().delete()
     except Exception as e:
         raise e
+    
+def getOther():
+    try: 
+        Other = OpponentModel.Other.objects.all()
+        return Other
+    except Exception as e:
+        print(f"dao says {e}")
+
+def getOtherById(OtherId):
+    try: 
+        Other = OpponentModel.Other.objects.filter(id=OtherId).first()
+        return Other
+    except Exception as e:
+        print(f"dao says {e}")
     
     
 

@@ -3,7 +3,7 @@ from django.urls import path
 from myapp.presentation import PlayerStatsController
 from .presentation import PlayerController,TeamController,LeagueController, MatcheController, TeamStatsController, UserController
 from .presentation import TeamStatsPartsController, PlayerController, PlayerStatsController,TeamController,LeagueController
-from .presentation import MatcheController, TeamStatsController, UserController, OpponentController
+from .presentation import MatcheController, TeamStatsController, UserController, OpponentController, AIChatController
 
 urlpatterns = [  
     path('scrapPlayers/', PlayerController.scraping_players),
@@ -34,6 +34,7 @@ urlpatterns = [
 
     path('scrapOpponents/', OpponentController.scraping_opponents),
     path('Opponent/', OpponentController.get_all_opponents),
+    path('Opponent/<int:id>', OpponentController.get_Opponent_by_id),
 
     path('TeamStats/<int:match_id>', TeamStatsController.getTeamStatsByMatchId),
     path('Summary/<int:summary_id>', TeamStatsPartsController.getSummaryById),
@@ -44,10 +45,18 @@ urlpatterns = [
     path('Defense/<int:defense_id>', TeamStatsPartsController.getDefenseById),
     path('Goalkeeper/<int:goalkeeper_id>', TeamStatsPartsController.getGoalkeeperById),
 
+    path('SSummary/<int:id>', OpponentController.get_summary_by_id),
+    path('Defending/<int:id>', OpponentController.get_defending_by_id),
+    path('Other/<int:id>', OpponentController.get_other_by_id),
+    path('Attacking/<int:id>', OpponentController.get_attacking_by_id),
+    path('Passing/<int:id>', OpponentController.get_passing_by_id),
+
     path('scrapTeamStats/', TeamStatsController.scraping_team_Stats),
     path('user/', UserController.getAllUsers),
     path('user/create/', UserController.addUser),
     path('user/login/', UserController.loginUser),
     path('getPlayerTeamStats/', PlayerStatsController.scraping_players_stats_with_teams),
-    path('user/getUser/', UserController.user)
+    path('user/getUser/', UserController.user),
+
+    path('api/gemini/generate-content/', AIChatController.gemini_proxy)
 ]

@@ -7,7 +7,7 @@ import {
 export default function Footer() {
   return (
     <>
-      <div className="flex flex-col gap-4 sm:flex-row justify-between items-center sm:px-10 md:px-20 lg:px-32 py-14 border-t border-gray-800 bg-black">
+      <div className="flex flex-col h-[800px] gap-4 sm:flex-row justify-between items-center sm:px-10 md:px-20 lg:px-32 py-14 border-t border-gray-800 bg-black">
         <span className="transition-all duration-300 hover:text-white cursor-pointer font-manrope font-semibold text-gray-500 text-md">
           © Kick-Insights
         </span>

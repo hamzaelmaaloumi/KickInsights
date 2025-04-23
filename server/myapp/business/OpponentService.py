@@ -23,6 +23,94 @@ def getAllOponents():
         return opponents  
     except Exception as e:
         print(f"service says {e}")
+@staticmethod
+def getOpponentById(id):
+    try: 
+        Opponent = OpponentDao.get_Opponent_by(id)
+        return Opponent
+    except Exception as e:
+        print(f"service says {e}")
+
+
+@staticmethod
+def getSummary():
+    try: 
+        summary = OpponentDao.getSummary()
+        return summary
+    except Exception as e:
+        print(f"service says {e}")
+@staticmethod
+def getSummaryById(id):
+    try: 
+        summary = OpponentDao.getSummaryById(id)
+        return summary
+    except Exception as e:
+        print(f"service says {e}")
+
+
+@staticmethod
+def getAttacking():
+    try: 
+        Attacking = OpponentDao.getAttacking()
+        return Attacking
+    except Exception as e:
+        print(f"service says {e}")
+@staticmethod
+def getAttackingById(id):
+    try: 
+        Attacking = OpponentDao.getAttackingById(id)
+        return Attacking
+    except Exception as e:
+        print(f"service says {e}")
+
+@staticmethod
+def getPassing():
+    try: 
+        Passing = OpponentDao.getPassing()
+        return Passing
+    except Exception as e:
+        print(f"service says {e}")
+@staticmethod
+def getPassingById(id):
+    try: 
+        Passing = OpponentDao.getPassingById(id)
+        return Passing
+    except Exception as e:
+        print(f"service says {e}")
+
+@staticmethod
+def getDefending():
+    try: 
+        Defending = OpponentDao.getDefending()
+        return Defending
+    except Exception as e:
+        print(f"service says {e}")
+@staticmethod
+def getDefendingById(id):
+    try: 
+        Defending = OpponentDao.getDefendingById(id)
+        return Defending
+    except Exception as e:
+        print(f"service says {e}")
+
+
+
+@staticmethod
+def getOther():
+    try: 
+        Other = OpponentDao.getOther()
+        return Other
+    except Exception as e:
+        print(f"service says {e}")
+@staticmethod
+def getOtherById(id):
+    try: 
+        Other = OpponentDao.getOtherById(id)
+        return Other
+    except Exception as e:
+        print(f"service says {e}")
+
+
 
     
 @staticmethod
@@ -47,6 +135,7 @@ def scrap_Opponent_stats(x):
     options.add_argument("--log-level=3")  # Suppress logs: 0=ALL, 1=DEBUG, 2=INFO, 3=WARNING
     options.add_experimental_option("excludeSwitches", ["enable-logging"])  # Exclude unnecessary logs
 
+    
 
     try:
         driver = webdriver.Chrome(service=service, options=options)
@@ -145,7 +234,7 @@ def scrap_Opponent_stats(x):
             print(f"stats has {len(stats)} elements")
 
             print("start waiting")
-            time.sleep(5)
+            time.sleep(10)
             print("finished waiting")
 
             stats = WebDriverWait(driver, 5).until(
@@ -200,7 +289,7 @@ def scrap_Opponent_stats(x):
             print("-----------------------------------------------------------------------------------------------")
             print("-----------------------------------------------------------------------------------------------")
 
-            driver.execute_script("window.scrollBy(0, 100);")
+            driver.execute_script("window.scrollBy(0, 250);")
             time.sleep(1)
 
             # Passes section
@@ -209,7 +298,7 @@ def scrap_Opponent_stats(x):
             time.sleep(3)
             passes_stats = {
                 "ball_possession_percentage": convert("ball_possession_percentage", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Ball possession")]/span[2]').text)["ball_possession"],
-                **convert("Accurate per game", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Accurate per game")]/span[2]').text),
+                **convert("Accurate per game", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Accurate passes")]/span[2]').text),
                 **convert("Acc. own half", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Acc. own half")]/span[2]').text),
                 **convert("Acc. opposition half", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Acc. opposition half")]/span[2]').text),
                 **convert("Acc. long balls", passes.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Acc. long balls")]/span[2]').text),
@@ -220,7 +309,7 @@ def scrap_Opponent_stats(x):
             print("-----------------------------------------------------------------------------------------------")
             print("-----------------------------------------------------------------------------------------------")
 
-            driver.execute_script("window.scrollBy(0, 100);")
+            driver.execute_script("window.scrollBy(0, 250);")
             time.sleep(1)
 
             # Defending section
@@ -231,8 +320,8 @@ def scrap_Opponent_stats(x):
                 "clean_sheets": int(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Clean sheets")]/span[2]').text),
                 "goals_conceded_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Goals conceded per game")]/span[2]').text),
                 "tackles_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Tackles per game")]/span[2]').text),
-                "interceptions_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Interceptions per game")]/span[2]').text),
-                "clearances_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Clearances per game")]/span[2]').text),
+                "interceptions_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Interceptions")]/span[2]').text),
+                "clearances_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Clearances")]/span[2]').text),
                 "saves_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Saves per game")]/span[2]').text),
                 "balls_recovered_per_game": float(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Balls recovered per game")]/span[2]').text),
                 "errors_leading_to_shot": int(defending.find_element(By.XPATH, './/div[contains(@class, "Box") and contains(., "Errors leading to shot")]/span[2]').text),
@@ -247,7 +336,7 @@ def scrap_Opponent_stats(x):
             print("-----------------------------------------------------------------------------------------------")
             print("-----------------------------------------------------------------------------------------------")
 
-            #driver.execute_script("window.scrollBy(0, 60);")
+            driver.execute_script("window.scrollBy(0, 450);")
             #time.sleep(4)
 
             # Other section

@@ -46,20 +46,38 @@ const VerticalStepProgress = () => {
         success: false,
         successMsg: "",
       });
+
+    const [opponentStatsScrapingState, setOpponentStatsScrapingState] = useState({
+      loading: false,
+      alert: false,
+      alertMsg: "",
+      success: false,
+      successMsg: "",
+    });
       
       const scrapeData = async (endpoint: string, setState: Function) => {
         setState((prev: Object) => ({ ...prev, loading: true }));
       
         try {
-          await axios.get(API_URL + endpoint);
+          const request = await axios.get(API_URL + endpoint);
+          if(request.data.success === "true"){
+            setState({
+              loading: false,
+              alert: false,
+              alertMsg: "",
+              success: true,
+              successMsg: "Scraping completed successfully! Data has been retrieved and saved",
+            });
+            return 
+          }
           setState({
             loading: false,
-            alert: false,
-            alertMsg: "",
-            success: true,
-            successMsg: "Scraping completed successfully! Data has been retrieved and saved",
+            alert: true,
+            alertMsg: `An error happened: ${request.data.error}`,
+            success: false,
+            successMsg: "",
           });
-        } catch (err) {
+        } catch (err: any) {
           setState({
             loading: false,
             alert: true,
@@ -74,6 +92,7 @@ const VerticalStepProgress = () => {
       const scrape_teams = () => scrapeData("scrapTeams/", setTeamScrapingState);
       const scrape_players = () => scrapeData("scrapPlayers/", setPlayerScrapingState);
       const scrape_matches = () => scrapeData("scrapMatches/", setMatchScrapingState);
+      const scrape_opponentStats = () => scrapeData("scrapOpponents/", setOpponentStatsScrapingState)
       
 
 
@@ -95,7 +114,8 @@ const VerticalStepProgress = () => {
     { id: 1, title: "Scraping the Leagues", state: leagueScrapingState, setState: setLeagueScrapingState, scrape: scrape_leagues , icon: league },
     { id: 2, title: "Scraping the Teams", state: teamScrapingState, setState: setTeamScrapingState, scrape: scrape_teams, icon: team },
     { id: 3, title: "Scraping the Players", state: playerScrapingState, setState: setPlayerScrapingState, scrape: scrape_players, icon: player },
-    { id: 4, title: "Scraping the Matches", state: matchScrapingState, setState: setMatchScrapingState, scrape: scrape_matches, icon: match}
+    { id: 4, title: "Scraping the Matches", state: matchScrapingState, setState: setMatchScrapingState, scrape: scrape_matches, icon: match},
+    { id: 5, title: "Scraping Opponents'stats", state: opponentStatsScrapingState, setState: setOpponentStatsScrapingState, scrape: scrape_opponentStats, icone: NaN}
   ]
 
 
@@ -171,8 +191,8 @@ const VerticalStepProgress = () => {
 
         <div className="relative pt-8 pb-20">
           {/* Main connector line with glowing effect */}
-          <div className="absolute left-8 md:left-1/2 md:-ml-1 top-0 w-2 bg-gradient-to-b from-red-900/30 via-red-600/20 to-pink-900/30 h-full rounded-full">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-red-600 via-red-500 to-pink-600 opacity-30 blur-sm"></div>
+          <div className="absolute left-8 md:left-1/2 md:-ml-1 top-0 w-2 bg-gradient-to-b from-green-900 via-green-700 to-green-950 h-full rounded-full">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-green-900 via-green-700 to-green-950 opacity-30 blur-sm"></div>
           </div>
           
           {/* Nodes */}
@@ -197,9 +217,9 @@ const VerticalStepProgress = () => {
                     {/* Pulse animation */}
                     {
                       <>
-                        <span className="absolute inset-0 rounded-full animate-ping bg-red-600 opacity-20 duration-1000"></span>
-                        <span className="absolute inset-0 rounded-full animate-pulse bg-red-500 opacity-10 duration-1500"></span>
-                        <span className="absolute -inset-1 rounded-full animate-pulse bg-red-500 opacity-5 blur-sm"></span>
+                        <span className="absolute inset-0 rounded-full animate-ping bg-green-600 opacity-20 duration-1000"></span>
+                        <span className="absolute inset-0 rounded-full animate-pulse bg-green-500 opacity-10 duration-1500"></span>
+                        <span className="absolute -inset-1 rounded-full animate-pulse bg-green-500 opacity-5 blur-sm"></span>
                       </>
                     }
                   </div>
@@ -213,15 +233,14 @@ const VerticalStepProgress = () => {
                 `}>
                   <div className={`
                     p-6 rounded-2xl
-                    bg-[#141414]
+                    bg-[#131217]
                     border border-stone-800
                     shadow-[0_0_25px_rgba(180,0,0,0.05)]
-                    hover:shadow-[0_0_25px_rgba(220,0,0,0.15)] 
                     transition-all duration-500
                   `}>
                     <div className="flex items-center gap-3 mb-3">
                       <div className={`
-                        h-6 w-1 rounded-full bg-gradient-to-b from-red-500 to-red-700
+                        h-6 w-1 rounded-full bg-gradient-to-b from-green-500 to-green-700
                         ${isEven ? 'order-first' : 'md:order-last'}
                       `}></div>
                       <h3 className="text-2xl font-bold text-gray-300 font-manrope">
@@ -235,22 +254,7 @@ const VerticalStepProgress = () => {
                     
                   </div>
                   
-                  {/* Connector Line */}
-                  <div className={`
-                    absolute top-14 h-0.5 bg-gradient-to-r
-                    ${isEven 
-                      ? 'left-16 right-[calc(50%+2rem)] from-red-900/50 to-transparent md:right-auto md:w-[calc(50%-4rem)]' 
-                      : 'left-16 right-[calc(50%+2rem)] from-red-900/50 to-transparent md:left-[calc(50%+2rem)] md:right-auto md:w-[calc(50%-4rem)] md:from-transparent md:to-red-900/50'
-                    }
-                    hidden md:block
-                  `}>
-                    {
-                      <div className={`
-                        absolute top-0 h-full w-2 bg-red-500 rounded-full
-                        ${isEven ? 'animate-moveRight' : 'animate-moveLeft right-0'}
-                      `}></div>
-                    }
-                  </div>
+                  
                 </div>
                 
                 {/* Date/Number indicator */}
@@ -265,7 +269,7 @@ const VerticalStepProgress = () => {
                 `}>
                   <div className="bg-[#191921] px-4 py-1 rounded-full border border-gray-800 shadow-lg">
                     <span className={`
-                      font-mono text-sm font-bold text-red-500
+                      font-mono text-sm font-bold text-green-500
                     `}>PHASE {node.id}</span>
                   </div>
                 </div>

@@ -14,7 +14,9 @@ export default {
       },
       fontFamily: {
         manrope: ["Manrope", "sans-serif"],
-        robotoMono: ["Roboto Mono", "monospace"],
+        'sofia-regular': ["Sofia", "cursive"],
+        Allura: ["Allura", "cursive"],
+        'dancing-script': ['"Dancing Script"', 'cursive'],
       },
       animation: {
         slideIn: "slideIn 0.3s ease-out forwards",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import httpService from "../../HttpService/http-service";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import Ochat from "./Ochat";
 
 
 interface match {
@@ -125,6 +126,8 @@ export const Stats = () => {
 
   const [matchStatsError, setMatchStatsError] = useState(false)
 
+  const [context, setContext] = useState({})
+
 
   useEffect(() => {
     const fetchMatchData = async () => {
@@ -180,7 +183,22 @@ export const Stats = () => {
     fetchMatchStats()
   },[teamStats])
 
-  console.log(match?.teamBLogo);
+  useEffect(()=>{
+    if (
+      (summary && Object.keys(summary).length !== 0) ||
+      (attack && Object.keys(attack).length !== 0) ||
+      (shoot && Object.keys(shoot).length !== 0) ||
+      (passes && Object.keys(passes).length !== 0) ||
+      (dual && Object.keys(dual).length !== 0) ||
+      (defense && Object.keys(defense).length !== 0) ||
+      (goalkeeper && Object.keys(goalkeeper).length !== 0)
+  ) {
+      setContext({...context, ...summary, ...attack, ...attack, ...shoot, ...passes, ...dual, ...defense, ...goalkeeper})
+  }
+
+
+
+  }, [summary, attack, shoot, passes, dual, defense, attack, goalkeeper])
   
 
   
@@ -535,6 +553,8 @@ export const Stats = () => {
           </div>
         </div>
       </div>}
+      <Ochat data={context} generalContext={"Mor'Stats"} />
+     
     </div>
   );
   

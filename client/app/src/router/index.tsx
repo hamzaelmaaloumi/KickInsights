@@ -16,6 +16,8 @@ import Match from "../pages/Match/Match";
 import Stats from "../pages/Match/Stats";
 import Scraper from "../pages/Admin/Scraper";
 import Progress from "../pages/Admin/Progress";
+import OStats from "../pages/Match/OStats";
+import Ochat from "../pages/Match/Ochat";
 
 export const routers = createBrowserRouter([
   {
@@ -35,10 +37,21 @@ export const routers = createBrowserRouter([
         element: <Stats />,
       },
       {
+        path: "OStats/:OId",
+        element: <OStats />
+      },
+      {
+        path: "GEMINI",
+        element: <Ochat />
+      },
+      {
         path: "squad",
         element: <Squad />,
       },
-      { path: "/squad", element: <Squad /> },
+      { 
+        path: "/squad", 
+        element: <Squad /> 
+      },
       {
         path: "*",
         element: <NotFound />,
